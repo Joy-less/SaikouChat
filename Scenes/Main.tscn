@@ -1,0 +1,289 @@
+[gd_scene load_steps=12 format=3 uid="uid://b4qiqpcdos7u5"]
+
+[ext_resource type="Script" path="res://Scripts/GUIs/CharacterSelectScreen.cs" id="1_8ri7a"]
+[ext_resource type="Script" path="res://Scripts/GUIs/CharacterCreateScreen.cs" id="2_hptii"]
+[ext_resource type="Script" path="res://Scripts/AI/LLM.gd" id="2_m72s7"]
+[ext_resource type="Script" path="res://Scripts/Storage/Storage.cs" id="3_1yded"]
+[ext_resource type="Texture2D" uid="uid://cuj0cesbn781d" path="res://Images/Placeholder.png" id="5_t6ohq"]
+[ext_resource type="Theme" uid="uid://c3b8fmw0rqsxv" path="res://Themes/SubTheme.tres" id="5_tp71k"]
+[ext_resource type="Script" path="res://Scripts/GUIs/ChatSelectScreen.cs" id="8_8plea"]
+[ext_resource type="Script" path="res://Scripts/GUIs/ChatScreen.cs" id="9_pfw41"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_3cx6t"]
+font_size = 18
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3y8ft"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fu4t7"]
+
+[node name="Root" type="Node"]
+
+[node name="LLM" type="Node" parent="."]
+script = ExtResource("2_m72s7")
+model_path = "C:\\Users\\patri\\Downloads\\Meta-Llama-3-8B-Instruct-bf16-correct-pre-tokenizer-and-EOS-token-Q4_K_M.gguf"
+
+[node name="Storage" type="Node" parent="."]
+script = ExtResource("3_1yded")
+Placeholder = ExtResource("5_t6ohq")
+
+[node name="CharacterSelectScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterCreateScreen", "ChatSelectScreen", "CharacterList", "CreateButton")]
+visible = false
+offset_right = 405.0
+offset_bottom = 720.0
+script = ExtResource("1_8ri7a")
+Storage = NodePath("../Storage")
+CharacterCreateScreen = NodePath("../CharacterCreateScreen")
+ChatSelectScreen = NodePath("../ChatSelectScreen")
+CharacterList = NodePath("CharacterList")
+CreateButton = NodePath("CreateButton")
+
+[node name="CharacterList" type="ItemList" parent="CharacterSelectScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 80.0
+offset_bottom = -120.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+fixed_icon_size = Vector2i(60, 60)
+
+[node name="CreateButton" type="Button" parent="CharacterSelectScreen"]
+layout_mode = 0
+offset_left = 82.5
+offset_top = 630.0
+offset_right = 322.5
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Create Character"
+
+[node name="CharacterCreateScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "NameInput", "NicknameInput", "BioInput", "IconInput", "CreateButton", "BackButton")]
+visible = false
+offset_right = 405.0
+offset_bottom = 720.0
+script = ExtResource("2_hptii")
+Storage = NodePath("../Storage")
+CharacterSelectScreen = NodePath("../CharacterSelectScreen")
+NameInput = NodePath("NameInput")
+NicknameInput = NodePath("NicknameInput")
+BioInput = NodePath("BioInput")
+IconInput = NodePath("IconBackground/IconInput")
+CreateButton = NodePath("CreateButton")
+BackButton = NodePath("BackButton")
+
+[node name="NameInput" type="LineEdit" parent="CharacterCreateScreen"]
+layout_mode = 2
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 250.0
+offset_bottom = 95.0
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Name"
+
+[node name="NicknameInput" type="LineEdit" parent="CharacterCreateScreen"]
+layout_mode = 2
+offset_left = 50.0
+offset_top = 100.0
+offset_right = 250.0
+offset_bottom = 145.0
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Nickname"
+
+[node name="BioInput" type="TextEdit" parent="CharacterCreateScreen"]
+layout_mode = 2
+offset_left = 50.0
+offset_top = 150.0
+offset_right = 350.0
+offset_bottom = 500.0
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Bio"
+wrap_mode = 1
+
+[node name="IconBackground" type="Panel" parent="CharacterCreateScreen"]
+layout_mode = 0
+offset_left = 255.0
+offset_top = 50.0
+offset_right = 350.0
+offset_bottom = 145.0
+theme = ExtResource("5_tp71k")
+
+[node name="IconInput" type="TextureButton" parent="CharacterCreateScreen/IconBackground"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+texture_normal = ExtResource("5_t6ohq")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="CreateButton" type="Button" parent="CharacterCreateScreen"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 640.0
+offset_right = 185.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Create"
+
+[node name="BackButton" type="Button" parent="CharacterCreateScreen"]
+layout_mode = 0
+offset_left = 220.0
+offset_top = 640.0
+offset_right = 370.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Back"
+
+[node name="ChatSelectScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "ChatScreen", "CharacterSelectScreen", "ChatList", "CreateButton", "BackButton")]
+visible = false
+offset_right = 405.0
+offset_bottom = 720.0
+script = ExtResource("8_8plea")
+Storage = NodePath("../Storage")
+ChatScreen = NodePath("../ChatScreen")
+CharacterSelectScreen = NodePath("../CharacterSelectScreen")
+ChatList = NodePath("ChatList")
+CreateButton = NodePath("CreateButton")
+BackButton = NodePath("BackButton")
+
+[node name="ChatList" type="ItemList" parent="ChatSelectScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 80.0
+offset_bottom = -120.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+fixed_icon_size = Vector2i(60, 60)
+
+[node name="CreateButton" type="Button" parent="ChatSelectScreen"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 640.0
+offset_right = 185.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "New Chat"
+
+[node name="BackButton" type="Button" parent="ChatSelectScreen"]
+layout_mode = 0
+offset_left = 220.0
+offset_top = 640.0
+offset_right = 370.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Back"
+
+[node name="ChatScreen" type="Panel" parent="." node_paths=PackedStringArray("LLM", "Storage", "ChatSelectScreen", "MessageList", "MessageTemplate", "MessageInput", "SendButton", "BackButton")]
+visible = false
+offset_right = 405.0
+offset_bottom = 720.0
+script = ExtResource("9_pfw41")
+LLM = NodePath("../LLM")
+Storage = NodePath("../Storage")
+ChatSelectScreen = NodePath("../ChatSelectScreen")
+MessageList = NodePath("MessageList")
+MessageTemplate = NodePath("MessageList/BoxContainer/MessageTemplate")
+MessageInput = NodePath("MessageInput")
+SendButton = NodePath("SendButton")
+BackButton = NodePath("BackButton")
+
+[node name="MessageList" type="ScrollContainer" parent="ChatScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 80.0
+offset_bottom = -200.0
+grow_horizontal = 2
+grow_vertical = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="BoxContainer" type="VBoxContainer" parent="ChatScreen/MessageList"]
+layout_mode = 2
+
+[node name="MessageTemplate" type="MarginContainer" parent="ChatScreen/MessageList/BoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Background" type="Panel" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate"]
+custom_minimum_size = Vector2(405, 80)
+layout_mode = 2
+theme = ExtResource("5_tp71k")
+
+[node name="AuthorIcon" type="TextureRect" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate/Background"]
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 80.0
+texture = ExtResource("5_t6ohq")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AuthorName" type="Label" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate/Background"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 90.0
+offset_bottom = 26.0
+grow_horizontal = 2
+text = "Author"
+label_settings = SubResource("LabelSettings_3cx6t")
+
+[node name="MessageContainer" type="MarginContainer" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate"]
+custom_minimum_size = Vector2(315, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/margin_top = 25
+
+[node name="MessageLabel" type="TextEdit" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate/MessageContainer"]
+custom_minimum_size = Vector2(315, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_colors/font_readonly_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxEmpty_3y8ft")
+theme_override_styles/read_only = SubResource("StyleBoxEmpty_fu4t7")
+text = "Message"
+editable = false
+wrap_mode = 1
+scroll_fit_content_height = true
+
+[node name="MessageInput" type="TextEdit" parent="ChatScreen"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 610.0
+offset_right = 315.0
+offset_bottom = 700.0
+wrap_mode = 1
+
+[node name="SendButton" type="Button" parent="ChatScreen"]
+layout_mode = 0
+offset_left = 320.0
+offset_top = 610.0
+offset_right = 390.0
+offset_bottom = 700.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Send"
+
+[node name="BackButton" type="Button" parent="ChatScreen"]
+layout_mode = 0
+offset_left = 245.0
+offset_top = 10.0
+offset_right = 395.0
+offset_bottom = 60.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Back"

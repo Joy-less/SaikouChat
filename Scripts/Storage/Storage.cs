@@ -25,7 +25,7 @@ public partial class Storage : Node {
     }
     public void Save() {
         // Write save data to file
-        File.WriteAllText(SavePath, JsonConvert.SerializeObject(SaveData));
+        File.WriteAllText(SavePath, JsonConvert.SerializeObject(SaveData, Formatting.Indented));
     }
     public void Migrate() {
         // 1.0 -> 1.1

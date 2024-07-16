@@ -12,11 +12,8 @@ public class LLMBinding(Node Inner) {
     public async Task<string> GenerateAsync(string Prompt, string Grammar = "", string Json = "", Action<string> OnPartial = null) {
         return await Await<string>(Inner.Call("generate_async", Prompt, Grammar, Json, Callable.From(OnPartial)));
     }
-    public async Task<string> PromptAsync(string Prompt, int MinLength = 1, int MaxLength = 1000, Action<string> OnPartial = null) {
+    public async Task<string> PromptAsync(string Prompt, int MinLength = 1, int MaxLength = 400, Action<string> OnPartial = null) {
         return await Await<string>(Inner.Call("prompt_async", Prompt, MinLength, MaxLength, Callable.From(OnPartial)));
-    }
-    public void StopGenerate() {
-        Inner.Call("stop_generate");
     }
 
     private async Task<Variant[]> Await(Variant Coroutine) {

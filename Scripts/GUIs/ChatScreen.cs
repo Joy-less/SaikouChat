@@ -8,10 +8,13 @@ public partial class ChatScreen : Panel {
     [Export] ScrollContainer MessageList;
     [Export] Control MessageTemplate;
     [Export] TextEdit MessageInput;
+    [Export] Label TypingIndicator;
     [Export] Button SendButton;
     [Export] Button BackButton;
 
+    private readonly SemaphoreSlim Semaphore = new(1, 1);
     public Guid ChatId;
+    private double TypingIndicatorTimeLeft;
     
     private LLMBinding LLMBinding;
     private long ResponseCounter;
@@ -21,6 +24,11 @@ public partial class ChatScreen : Panel {
         SendButton.Pressed += Send;
         BackButton.Pressed += Back;
         MessageList.GetVScrollBar().Changed += ScrollChanged;
+    }
+    public override void _Process(double Delta) {
+        // Update typing indicator
+        TypingIndicatorTimeLeft = Mathf.Max(0, TypingIndicatorTimeLeft - Delta);
+        TypingIndicator.Visible = TypingIndicatorTimeLeft > 0;
     }
     public new void Show() {
         base.Show();
@@ -43,7 +51,7 @@ public partial class ChatScreen : Panel {
 
     private void Send() {
         // Take prompt from input box
-        string Prompt = MessageInput.Text;
+        string Prompt = MessageInput.Text.Trim();
         MessageInput.Clear();
         // Send chat message
         ChatMessageRecord ChatMessage = Storage.CreateChatMessage(ChatId, Prompt, null);
@@ -80,51 +88,49 @@ public partial class ChatScreen : Panel {
         }
     }
     private async Task GenerateChatMessageAsync() {
-        // Increment response counter
-        long ResponseId = Interlocked.Increment(ref ResponseCounter);
-        // Stop generating current response
-        LLMBinding.StopGenerate();
+        await Semaphore.WaitAsync();
+        try {
+            // Get target character
+            CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
+            // Get chat history
+            IEnumerable<ChatMessageRecord> ChatMessages = Storage.GetChatMessages(ChatId).TakeLast(100);
+            // Get last user chat message
+            ChatMessageRecord LastUserChatMessage = ChatMessages.Last(ChatMessage => ChatMessage.Author is null);
+            // Format chat history for prompt
+            IEnumerable<object> FormattedChatMessages = ChatMessages.Select(ChatMessage => new {
+                Author = ChatMessage.Author is not null ? $"Character: {Character.Name}" : "User",
+                TimeSent = ChatMessage.CreatedTime.ToConciseString(),
+                Message = ChatMessage.Message,
+            });
 
-        // Get target character
-        CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
-        // Get chat history
-        IEnumerable<ChatMessageRecord> ChatMessages = Storage.GetChatMessages(ChatId).TakeLast(100);
-        // Format chat history for prompt
-        IEnumerable<object> FormattedChatMessages = ChatMessages.Select(ChatMessage => new {
-            Author = ChatMessage.Author is not null ? Character.Name : "(User)",
-            TimeSent = ChatMessage.CreatedTime.ToConciseString(),
-            Message = ChatMessage.Message,
-        });
-
-        // Build prompt
-        string Prompt = JsonConvert.SerializeObject(new {
-            Instructions = """
-                You are the character below.
-                Respond to the prompt as if you were the character.
-                Never break character.
-                """,
-            Character = new {
-                Name = Character.Name,
-                Nickname = Character.Nickname,
-                Bio = Character.Bio,
-            },
-            History = FormattedChatMessages,
-            Prompt = ChatMessages.Last().Message,
-        });
-        
-        GD.Print(Prompt);
-        
-        // Generate response
-        string Response = await LLMBinding.PromptAsync(Prompt, OnPartial: Text => {
-            GD.Print(Text);
-        });
-        Response = Response.Trim();
-        // Ensure newer response is not being generated
-        if (ResponseId < ResponseCounter) {
-            return;
+            // Build prompt
+            string Prompt = JsonConvert.SerializeObject(new {
+                Instructions = """
+                    You are the character in a conversation with the user.
+                    Your conversation history is below.
+                    Respond to the prompt as the character.
+                    Do not break character.
+                    """,
+                Character = new {
+                    Name = Character.Name,
+                    Nickname = Character.Nickname,
+                    Bio = Character.Bio,
+                },
+                History = FormattedChatMessages,
+                Prompt = LastUserChatMessage.Message,
+            }, Formatting.Indented);
+            
+            // Generate response
+            string Response = (await LLMBinding.PromptAsync(Prompt, OnPartial: Text => {
+                TypingIndicatorTimeLeft = 3;
+            })).Trim();
+            // Send chat message
+            ChatMessageRecord ChatMessage = Storage.CreateChatMessage(ChatId, Response, Character.Id);
+            AddChatMessage(ChatMessage);
+            TypingIndicatorTimeLeft = 0;
         }
-        // Send chat message
-        ChatMessageRecord ChatMessage = Storage.CreateChatMessage(ChatId, Response, Character.Id);
-        AddChatMessage(ChatMessage);
+        finally {
+            Semaphore.Release();
+        }
     }
 }

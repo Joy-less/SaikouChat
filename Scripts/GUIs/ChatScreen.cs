@@ -1,5 +1,5 @@
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text;
 
 public partial class ChatScreen : Panel {
     [Export] Node LLM;
@@ -84,44 +84,46 @@ public partial class ChatScreen : Panel {
 
         // Generate response
         if (GenerateResponse) {
-            _ = GenerateChatMessageAsync();
+            _ = GenerateChatMessageAsync(ChatId);
         }
     }
-    private async Task GenerateChatMessageAsync() {
+    private async Task GenerateChatMessageAsync(Guid ChatId) {
         await Semaphore.WaitAsync();
         try {
             // Get target character
             CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
-            // Get chat history
+            // Get chat message history
             IEnumerable<ChatMessageRecord> ChatMessages = Storage.GetChatMessages(ChatId).TakeLast(100);
-            // Get last user chat message
-            ChatMessageRecord LastUserChatMessage = ChatMessages.Last(ChatMessage => ChatMessage.Author is null);
-            // Format chat history for prompt
-            IEnumerable<object> FormattedChatMessages = ChatMessages.Select(ChatMessage => new {
-                Author = ChatMessage.Author is not null ? $"Character: {Character.Name}" : "User",
-                TimeSent = ChatMessage.CreatedTime.ToConciseString(),
-                Message = ChatMessage.Message,
-            });
 
             // Build prompt
-            string Prompt = JsonConvert.SerializeObject(new {
-                Instructions = """
-                    You are the character in a conversation with the user.
-                    Your conversation history is below.
-                    Respond to the prompt as the character.
-                    Do not break character.
-                    """,
-                Character = new {
-                    Name = Character.Name,
-                    Nickname = Character.Nickname,
-                    Bio = Character.Bio,
-                },
-                History = FormattedChatMessages,
-                Prompt = LastUserChatMessage.Message,
-            }, Formatting.Indented);
+            StringBuilder PromptBuilder = new();
+            PromptBuilder.AppendLine("Instructions:");
+            PromptBuilder.AppendLine("""
+                You are the character in a conversation with the user.
+                Respond to the conversation as the character.
+                Do not break character.
+                """);
+            PromptBuilder.AppendLine();
+            PromptBuilder.AppendLine("Character:");
+            PromptBuilder.AppendLine($"""
+                Name: "{Character.Name}"
+                Bio: "{Character.Bio.Replace("\"", "\\\"")}"
+                """);
+            PromptBuilder.AppendLine();
+            PromptBuilder.AppendLine("Conversation:");
+            foreach (ChatMessageRecord CurrentChatMessage in ChatMessages) {
+                PromptBuilder.Append(CurrentChatMessage.Author is not null ? $"\"{Character.Name}\"" : "User");
+                PromptBuilder.AppendLine($": \"{CurrentChatMessage.Message}\"");
+            }
+            PromptBuilder.Append($"\"{Character.Name}\": ");
+            
+            // Print prompt (debug)
+            if (OS.IsDebugBuild()) {
+                GD.Print(PromptBuilder.ToString());
+            }
             
             // Generate response
-            string Response = (await LLMBinding.PromptAsync(Prompt, OnPartial: Text => {
+            string Response = (await LLMBinding.PromptAsync(PromptBuilder.ToString(), OnPartial: Text => {
                 TypingIndicatorTimeLeft = 3;
             })).Trim();
             // Send chat message

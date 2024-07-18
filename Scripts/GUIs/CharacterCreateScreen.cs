@@ -2,7 +2,6 @@ public partial class CharacterCreateScreen : Panel {
     [Export] Storage Storage;
     [Export] CharacterSelectScreen CharacterSelectScreen;
     [Export] LineEdit NameInput;
-    [Export] LineEdit NicknameInput;
     [Export] TextEdit BioInput;
     [Export] TextureButton IconInput;
     [Export] BaseButton CreateButton;
@@ -24,14 +23,13 @@ public partial class CharacterCreateScreen : Panel {
     }
     public void Clear() {
         NameInput.Clear();
-        NicknameInput.Clear();
         BioInput.Clear();
         IconInput.TextureNormal = Storage.Placeholder;
         Icon = null;
     }
 
     private void Create() {
-        Storage.CreateCharacter(NameInput.Text, NicknameInput.Text, BioInput.Text, Icon);
+        Storage.CreateCharacter(NameInput.Text, BioInput.Text, Icon);
 
         Hide();
         Clear();

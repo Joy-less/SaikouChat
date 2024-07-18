@@ -4,6 +4,7 @@ public partial class SettingsScreen : Panel {
     [Export] BaseButton BackButton;
     [Export] LineEdit ModelPathValue;
     [Export] SpinBox ChatHistoryLengthValue;
+    [Export] TextEdit InstructionsValue;
 
     private readonly FileDialog ModelFileDialog = new() {
         FileMode = FileDialog.FileModeEnum.OpenFile,
@@ -23,6 +24,7 @@ public partial class SettingsScreen : Panel {
         // Load current settings
         ModelPathValue.Text = Storage.SaveData.ModelPath;
         ChatHistoryLengthValue.Value = Storage.SaveData.ChatHistoryLength;
+        InstructionsValue.Text = Storage.SaveData.Instructions;
     }
     public new void Hide() {
         base.Hide();
@@ -30,6 +32,7 @@ public partial class SettingsScreen : Panel {
         // Save settings
         Storage.SaveData.ModelPath = ModelPathValue.Text;
         Storage.SaveData.ChatHistoryLength = Mathf.RoundToInt(ChatHistoryLengthValue.Value);
+        Storage.SaveData.Instructions = InstructionsValue.Text;
         Storage.Save();
     }
     

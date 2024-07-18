@@ -52,11 +52,10 @@ public partial class Storage : Node {
         Image.LoadWebpFromBuffer(Buffer);
         return ImageTexture.CreateFromImage(Image);
     }
-    public CharacterRecord CreateCharacter(string Name, string Nickname, string Bio, Image Icon = null) {
+    public CharacterRecord CreateCharacter(string Name, string Bio, Image Icon = null) {
         // Create character
         CharacterRecord Character = new() {
             Name = Name,
-            Nickname = Nickname,
             Bio = Bio,
         };
         // Store icon
@@ -104,6 +103,12 @@ public record SaveRecord {
     public string Version;
     public string ModelPath;
     public int ChatHistoryLength = 100;
+    public string Instructions = """
+        You are the character in a conversation with the user.
+        Add a message to the conversation in character.
+        Your message should fit the context of the conversation.
+        Do not break character.
+        """;
     public Dictionary<Guid, CharacterRecord> Characters = [];
     public Dictionary<Guid, ChatRecord> Chats = [];
     public Dictionary<Guid, byte[]> Images = [];
@@ -113,7 +118,6 @@ public abstract record Record {
 }
 public record CharacterRecord : Record {
     public string Name;
-    public string Nickname;
     public string Bio;
     public Guid? Icon;
     public DateTime CreatedTime = DateTime.UtcNow;

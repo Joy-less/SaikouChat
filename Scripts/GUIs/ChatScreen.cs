@@ -34,6 +34,10 @@ public partial class ChatScreen : Panel {
         // Update typing indicator
         TypingIndicatorTimeLeft = Mathf.Max(0, TypingIndicatorTimeLeft - Delta);
         TypingIndicator.Visible = TypingIndicatorTimeLeft > 0;
+        if (ChatId != default) {
+            CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
+            TypingIndicator.Text = $"{Character.Name} is typing...";
+        }
     }
     public new async void Show() {
         base.Show();
@@ -93,18 +97,41 @@ public partial class ChatScreen : Panel {
             Send();
         }
     }
+    private void Regenerate(Guid ChatId, Guid ChatMessageId) {
+        ChatRecord Chat = Storage.SaveData.Chats[ChatId];
+        ChatMessageRecord ChatMessage = Chat.ChatMessages[ChatMessageId];
+
+        // Delete message and all later messages
+        Chat.ChatMessages = Chat.ChatMessages.Where(_ChatMessage => _ChatMessage.Value.CreatedTime < ChatMessage.CreatedTime).ToDictionary();
+        Storage.Save();
+        Show();
+
+        // Generate new message
+        _ = GenerateChatMessageAsync(ChatId);
+    }
+    private void Delete(Guid ChatId, Guid ChatMessageId) {
+        ChatRecord Chat = Storage.SaveData.Chats[ChatId];
+
+        // Delete message
+        Chat.ChatMessages.Remove(ChatMessageId);
+        Storage.Save();
+        Show();
+    }
     private void AddChatMessage(ChatMessageRecord ChatMessage, bool GenerateResponse = false) {
         Control Message = (Control)MessageTemplate.Duplicate();
         // Get chat message author
         CharacterRecord Author = ChatMessage.Author is Guid AuthorId ? Storage.SaveData.Characters[AuthorId] : null;
         // Display author name
         Message.GetNode<Label>("Background/AuthorName").Text = Author is not null ? Author.Name : "You";
-        // Get author icon
-        Texture2D AuthorIcon = Storage.GetImage(Author is not null ? Author.Icon : default);
         // Display author icon
+        Texture2D AuthorIcon = Storage.GetImage(Author is not null ? Author.Icon : default);
         Message.GetNode<TextureRect>("Background/AuthorIcon").Texture = AuthorIcon;
         // Display message
         Message.GetNode<TextEdit>("MessageContainer/MessageLabel").Text = ChatMessage.Message;
+        // Connect regenerate button
+        Message.GetNode<BaseButton>("Background/RegenerateButton").Pressed += () => Regenerate(ChatId, ChatMessage.Id);
+        // Connect delete button
+        Message.GetNode<BaseButton>("Background/DeleteButton").Pressed += () => Delete(ChatId, ChatMessage.Id);
         // Add chat message
         Message.Show();
         MessageTemplate.GetParent().AddChild(Message);
@@ -124,12 +151,7 @@ public partial class ChatScreen : Panel {
             // Build prompt
             StringBuilder PromptBuilder = new();
             PromptBuilder.AppendLine("Instructions:");
-            PromptBuilder.AppendLine("""
-                You are the character in a conversation with the user.
-                Add a message to the conversation as the character.
-                Do not break character.
-                Add a different message instead of repeating yourself.
-                """);
+            PromptBuilder.AppendLine(Storage.SaveData.Instructions);
             PromptBuilder.AppendLine();
             PromptBuilder.AppendLine("Information:");
             PromptBuilder.AppendLine($"""

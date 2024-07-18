@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://b4qiqpcdos7u5"]
+[gd_scene load_steps=16 format=3 uid="uid://b4qiqpcdos7u5"]
 
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterSelectScreen.cs" id="1_8ri7a"]
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterCreateScreen.cs" id="2_hptii"]
@@ -11,9 +11,10 @@
 [ext_resource type="Script" path="res://Scripts/GUIs/ChatScreen.cs" id="9_pfw41"]
 [ext_resource type="Texture2D" uid="uid://dqamrq0avf0p8" path="res://Images/Generate.png" id="10_lvru2"]
 [ext_resource type="Script" path="res://Scripts/GUIs/SettingsScreen.cs" id="11_5r3ws"]
+[ext_resource type="Texture2D" uid="uid://b06ay7iowo8ab" path="res://Images/Delete.png" id="11_30l5g"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_3cx6t"]
-font_size = 18
+font_size = 17
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3y8ft"]
 
@@ -73,7 +74,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Settings"
 
-[node name="CharacterCreateScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "NameInput", "NicknameInput", "BioInput", "IconInput", "CreateButton", "BackButton")]
+[node name="CharacterCreateScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "NameInput", "BioInput", "IconInput", "CreateButton", "BackButton")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
@@ -81,7 +82,6 @@ script = ExtResource("2_hptii")
 Storage = NodePath("../Storage")
 CharacterSelectScreen = NodePath("../CharacterSelectScreen")
 NameInput = NodePath("NameInput")
-NicknameInput = NodePath("NicknameInput")
 BioInput = NodePath("BioInput")
 IconInput = NodePath("IconBackground/IconInput")
 CreateButton = NodePath("CreateButton")
@@ -95,15 +95,6 @@ offset_right = 250.0
 offset_bottom = 95.0
 theme_override_font_sizes/font_size = 20
 placeholder_text = "Name"
-
-[node name="NicknameInput" type="LineEdit" parent="CharacterCreateScreen"]
-layout_mode = 2
-offset_left = 50.0
-offset_top = 100.0
-offset_right = 250.0
-offset_bottom = 145.0
-theme_override_font_sizes/font_size = 20
-placeholder_text = "Nickname"
 
 [node name="BioInput" type="TextEdit" parent="CharacterCreateScreen"]
 layout_mode = 2
@@ -155,7 +146,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Back"
 
-[node name="SettingsScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "BackButton", "ModelPathValue", "ChatHistoryLengthValue")]
+[node name="SettingsScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "BackButton", "ModelPathValue", "ChatHistoryLengthValue", "InstructionsValue")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
@@ -165,6 +156,7 @@ CharacterSelectScreen = NodePath("../CharacterSelectScreen")
 BackButton = NodePath("BackButton")
 ModelPathValue = NodePath("SettingsList/ModelPath/Value")
 ChatHistoryLengthValue = NodePath("SettingsList/ChatHistoryLength/Value")
+InstructionsValue = NodePath("SettingsList/Instructions/Value")
 
 [node name="SettingsList" type="VBoxContainer" parent="SettingsScreen"]
 layout_mode = 1
@@ -177,47 +169,78 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="ModelPath" type="Panel" parent="SettingsScreen/SettingsList"]
-custom_minimum_size = Vector2(405, 80)
+custom_minimum_size = Vector2(405, 60)
 layout_mode = 2
 
 [node name="Heading" type="Label" parent="SettingsScreen/SettingsList/ModelPath"]
 layout_mode = 0
 offset_right = 202.5
-offset_bottom = 80.0
+offset_bottom = 60.0
 text = "Model Path"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Value" type="LineEdit" parent="SettingsScreen/SettingsList/ModelPath"]
-layout_mode = 0
-offset_left = 202.5
-offset_right = 405.0
-offset_bottom = 80.0
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -202.5
+grow_horizontal = 0
+grow_vertical = 2
 alignment = 1
 
 [node name="ChatHistoryLength" type="Panel" parent="SettingsScreen/SettingsList"]
-custom_minimum_size = Vector2(405, 80)
+custom_minimum_size = Vector2(405, 60)
 layout_mode = 2
 
 [node name="Heading" type="Label" parent="SettingsScreen/SettingsList/ChatHistoryLength"]
 layout_mode = 0
 offset_right = 202.5
-offset_bottom = 80.0
+offset_bottom = 60.0
 text = "Chat History Length"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Value" type="SpinBox" parent="SettingsScreen/SettingsList/ChatHistoryLength"]
-layout_mode = 0
-offset_left = 202.5
-offset_right = 405.0
-offset_bottom = 80.0
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -202.5
+grow_horizontal = 0
+grow_vertical = 2
 min_value = 1.0
 max_value = 1e+07
 value = 1.0
 rounded = true
 alignment = 1
 update_on_text_changed = true
+
+[node name="Instructions" type="Panel" parent="SettingsScreen/SettingsList"]
+custom_minimum_size = Vector2(405, 200)
+layout_mode = 2
+
+[node name="Heading" type="Label" parent="SettingsScreen/SettingsList/Instructions"]
+layout_mode = 0
+offset_right = 202.5
+offset_bottom = 60.0
+text = "Instructions"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Value" type="TextEdit" parent="SettingsScreen/SettingsList/Instructions"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -202.5
+grow_horizontal = 0
+grow_vertical = 2
+wrap_mode = 1
 
 [node name="BackButton" type="Button" parent="SettingsScreen"]
 layout_mode = 0
@@ -347,15 +370,46 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 90.0
-offset_bottom = 26.0
+offset_right = -25.0
+offset_bottom = 25.0
 grow_horizontal = 2
 text = "Author"
 label_settings = SubResource("LabelSettings_3cx6t")
+text_overrun_behavior = 3
+
+[node name="RegenerateButton" type="TextureButton" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate/Background"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -75.0
+offset_right = -50.0
+offset_bottom = 25.0
+grow_horizontal = 0
+tooltip_text = "Regenerate"
+texture_normal = ExtResource("10_lvru2")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="DeleteButton" type="TextureButton" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate/Background"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -45.0
+offset_right = -20.0
+offset_bottom = 25.0
+grow_horizontal = 0
+tooltip_text = "Delete"
+texture_normal = ExtResource("11_30l5g")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="MessageContainer" type="MarginContainer" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate"]
 custom_minimum_size = Vector2(315, 0)
 layout_mode = 2
 size_flags_horizontal = 8
+mouse_filter = 2
 theme_override_constants/margin_top = 25
 
 [node name="MessageLabel" type="TextEdit" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate/MessageContainer"]

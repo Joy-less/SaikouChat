@@ -124,6 +124,11 @@ public partial class ChatScreen : Panel {
                 Add a different message instead of repeating yourself.
                 """);
             PromptBuilder.AppendLine();
+            PromptBuilder.AppendLine("Information:");
+            PromptBuilder.AppendLine($"""
+                User's time: {DateTimeOffset.Now.ToConciseString()}
+                """);
+            PromptBuilder.AppendLine();
             PromptBuilder.AppendLine("Character:");
             PromptBuilder.AppendLine($"""
                 Name: "{Character.Name}"
@@ -144,7 +149,9 @@ public partial class ChatScreen : Panel {
             
             // Generate response
             string Response = (await LLMBinding.PromptAsync(PromptBuilder.ToString(), OnPartial: Text => {
-                TypingIndicatorTimeLeft = 3;
+                if (ChatId == this.ChatId) {
+                    TypingIndicatorTimeLeft = 3;
+                }
             })).Trim();
             // Send chat message
             ChatMessageRecord ChatMessage = Storage.CreateChatMessage(ChatId, Response, Character.Id);

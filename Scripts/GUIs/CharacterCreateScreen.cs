@@ -12,7 +12,7 @@ public partial class CharacterCreateScreen : Panel {
         FileMode = FileDialog.FileModeEnum.OpenFile,
         Access = FileDialog.AccessEnum.Filesystem,
         UseNativeDialog = true,
-        Filters = ["*.png,*.jpeg,*.jpg,*.bmp,*.webp,*.svg,*.tga;Images"],
+        Filters = ["*.webp,*.png,*.jpeg,*.jpg,*.bmp,*.svg,*.tga;Images"],
     };
     private Image Icon;
 

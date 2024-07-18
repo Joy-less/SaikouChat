@@ -9,8 +9,9 @@ public partial class ChatScreen : Panel {
     [Export] Control MessageTemplate;
     [Export] TextEdit MessageInput;
     [Export] Label TypingIndicator;
-    [Export] Button SendButton;
-    [Export] Button BackButton;
+    [Export] BaseButton SendButton;
+    [Export] BaseButton GenerateButton;
+    [Export] BaseButton BackButton;
 
     private readonly SemaphoreSlim Semaphore = new(1, 1);
     public Guid ChatId;
@@ -22,15 +23,17 @@ public partial class ChatScreen : Panel {
     public override void _Ready() {
         LLMBinding = new LLMBinding(LLM);
         SendButton.Pressed += Send;
+        GenerateButton.Pressed += Generate;
         BackButton.Pressed += Back;
-        MessageList.GetVScrollBar().Changed += ScrollChanged;
+        MessageList.GetVScrollBar().Changed += UpdateScroll;
+        MessageInput.TextChanged += UpdateText;
     }
     public override void _Process(double Delta) {
         // Update typing indicator
         TypingIndicatorTimeLeft = Mathf.Max(0, TypingIndicatorTimeLeft - Delta);
         TypingIndicator.Visible = TypingIndicatorTimeLeft > 0;
     }
-    public new void Show() {
+    public new async void Show() {
         base.Show();
 
         // Clear displayed chat messages
@@ -39,6 +42,9 @@ public partial class ChatScreen : Panel {
         foreach (ChatMessageRecord ChatMessage in Storage.GetChatMessages(ChatId)) {
             AddChatMessage(ChatMessage);
         }
+        // Scroll to bottom
+        await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        UpdateScroll();
     }
     public void Clear() {
         // Clear displayed chat messages
@@ -50,6 +56,10 @@ public partial class ChatScreen : Panel {
     }
 
     private void Send() {
+        // Ensure input box is not empty
+        if (string.IsNullOrWhiteSpace(MessageInput.Text)) {
+            return;
+        }
         // Take prompt from input box
         string Prompt = MessageInput.Text.Trim();
         MessageInput.Clear();
@@ -57,14 +67,24 @@ public partial class ChatScreen : Panel {
         ChatMessageRecord ChatMessage = Storage.CreateChatMessage(ChatId, Prompt, null);
         AddChatMessage(ChatMessage, true);
     }
+    public void Generate() {
+        // Generate a response
+        _ = GenerateChatMessageAsync(ChatId);
+    }
     private void Back() {
         Hide();
         Clear();
         ChatSelectScreen.Show();
     }
-    private void ScrollChanged() {
+    private void UpdateScroll() {
         // Scroll to bottom when chat message added
         MessageList.GetVScrollBar().Value = MessageList.GetVScrollBar().MaxValue;
+    }
+    private void UpdateText() {
+        // Send message when enter key pressed
+        if (MessageInput.Text.ContainsAny(['\r', '\n'])) {
+            Send();
+        }
     }
     private void AddChatMessage(ChatMessageRecord ChatMessage, bool GenerateResponse = false) {
         Control Message = (Control)MessageTemplate.Duplicate();
@@ -81,7 +101,6 @@ public partial class ChatScreen : Panel {
         // Add chat message
         Message.Show();
         MessageTemplate.GetParent().AddChild(Message);
-
         // Generate response
         if (GenerateResponse) {
             _ = GenerateChatMessageAsync(ChatId);
@@ -128,8 +147,11 @@ public partial class ChatScreen : Panel {
             })).Trim();
             // Send chat message
             ChatMessageRecord ChatMessage = Storage.CreateChatMessage(ChatId, Response, Character.Id);
-            AddChatMessage(ChatMessage);
             TypingIndicatorTimeLeft = 0;
+            // Add chat message to list
+            if (ChatId == this.ChatId) {
+                AddChatMessage(ChatMessage);
+            }
         }
         finally {
             Semaphore.Release();

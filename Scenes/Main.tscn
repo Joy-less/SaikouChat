@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://b4qiqpcdos7u5"]
+[gd_scene load_steps=14 format=3 uid="uid://b4qiqpcdos7u5"]
 
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterSelectScreen.cs" id="1_8ri7a"]
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterCreateScreen.cs" id="2_hptii"]
@@ -7,7 +7,9 @@
 [ext_resource type="Texture2D" uid="uid://cuj0cesbn781d" path="res://Images/Placeholder.png" id="5_t6ohq"]
 [ext_resource type="Theme" uid="uid://c3b8fmw0rqsxv" path="res://Themes/SubTheme.tres" id="5_tp71k"]
 [ext_resource type="Script" path="res://Scripts/GUIs/ChatSelectScreen.cs" id="8_8plea"]
+[ext_resource type="Texture2D" uid="uid://2xkawi0hkd86" path="res://Images/Send.png" id="9_m3uxe"]
 [ext_resource type="Script" path="res://Scripts/GUIs/ChatScreen.cs" id="9_pfw41"]
+[ext_resource type="Texture2D" uid="uid://dqamrq0avf0p8" path="res://Images/Generate.png" id="10_lvru2"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_3cx6t"]
 font_size = 18
@@ -185,7 +187,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Back"
 
-[node name="ChatScreen" type="Panel" parent="." node_paths=PackedStringArray("LLM", "Storage", "ChatSelectScreen", "MessageList", "MessageTemplate", "MessageInput", "TypingIndicator", "SendButton", "BackButton")]
+[node name="ChatScreen" type="Panel" parent="." node_paths=PackedStringArray("LLM", "Storage", "ChatSelectScreen", "MessageList", "MessageTemplate", "MessageInput", "TypingIndicator", "SendButton", "GenerateButton", "BackButton")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
@@ -197,7 +199,8 @@ MessageList = NodePath("MessageList")
 MessageTemplate = NodePath("MessageList/BoxContainer/MessageTemplate")
 MessageInput = NodePath("MessageInput")
 TypingIndicator = NodePath("TypingIndicator")
-SendButton = NodePath("SendButton")
+SendButton = NodePath("SendPanel/SendButton")
+GenerateButton = NodePath("GeneratePanel/GenerateButton")
 BackButton = NodePath("BackButton")
 
 [node name="MessageList" type="ScrollContainer" parent="ChatScreen"]
@@ -275,19 +278,59 @@ vertical_alignment = 1
 layout_mode = 0
 offset_left = 20.0
 offset_top = 610.0
-offset_right = 315.0
+offset_right = 335.0
 offset_bottom = 700.0
 wrap_mode = 1
 
-[node name="SendButton" type="Button" parent="ChatScreen"]
+[node name="SendPanel" type="Panel" parent="ChatScreen"]
 layout_mode = 0
-offset_left = 320.0
+offset_left = 340.0
 offset_top = 610.0
-offset_right = 390.0
-offset_bottom = 700.0
+offset_right = 385.0
+offset_bottom = 655.0
+theme = ExtResource("5_tp71k")
+
+[node name="SendButton" type="TextureButton" parent="ChatScreen/SendPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.5
+offset_top = 2.5
+offset_right = -2.5
+offset_bottom = -2.5
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Send"
 focus_mode = 0
-theme_override_font_sizes/font_size = 20
-text = "Send"
+texture_normal = ExtResource("9_m3uxe")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="GeneratePanel" type="Panel" parent="ChatScreen"]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 655.0
+offset_right = 385.0
+offset_bottom = 700.0
+theme = ExtResource("5_tp71k")
+
+[node name="GenerateButton" type="TextureButton" parent="ChatScreen/GeneratePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.5
+offset_top = 2.5
+offset_right = -2.5
+offset_bottom = -2.5
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Generate"
+focus_mode = 0
+texture_normal = ExtResource("10_lvru2")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="BackButton" type="Button" parent="ChatScreen"]
 layout_mode = 0

@@ -100,6 +100,7 @@ public partial class Storage : Node {
 
 public record SaveRecord {
     public string Version;
+    public int ChatHistoryLength = 100;
     public Dictionary<Guid, CharacterRecord> Characters = [];
     public Dictionary<Guid, ChatRecord> Chats = [];
     public Dictionary<Guid, byte[]> Images = [];

@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=3 format=3 uid="uid://boptpw8iyf5c6"]
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://boptpw8iyf5c6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_03v5q"]
 content_margin_left = 4.0
@@ -7,8 +7,11 @@ content_margin_right = 4.0
 content_margin_bottom = 4.0
 bg_color = Color(0, 0, 0, 0)
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q8n0r"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k28er"]
 
 [resource]
 Button/styles/focus = SubResource("StyleBoxFlat_03v5q")
+LineEdit/styles/focus = SubResource("StyleBoxEmpty_q8n0r")
 TextEdit/styles/focus = SubResource("StyleBoxEmpty_k28er")

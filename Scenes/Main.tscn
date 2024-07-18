@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://b4qiqpcdos7u5"]
+[gd_scene load_steps=15 format=3 uid="uid://b4qiqpcdos7u5"]
 
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterSelectScreen.cs" id="1_8ri7a"]
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterCreateScreen.cs" id="2_hptii"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://2xkawi0hkd86" path="res://Images/Send.png" id="9_m3uxe"]
 [ext_resource type="Script" path="res://Scripts/GUIs/ChatScreen.cs" id="9_pfw41"]
 [ext_resource type="Texture2D" uid="uid://dqamrq0avf0p8" path="res://Images/Generate.png" id="10_lvru2"]
+[ext_resource type="Script" path="res://Scripts/GUIs/SettingsScreen.cs" id="11_5r3ws"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_3cx6t"]
 font_size = 18
@@ -28,16 +29,18 @@ model_path = "C:\\Users\\patri\\Downloads\\Meta-Llama-3-8B.Q8_0.gguf"
 script = ExtResource("3_1yded")
 Placeholder = ExtResource("5_t6ohq")
 
-[node name="CharacterSelectScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterCreateScreen", "ChatSelectScreen", "CharacterList", "CreateButton")]
+[node name="CharacterSelectScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterCreateScreen", "SettingsScreen", "ChatSelectScreen", "CharacterList", "CreateButton", "SettingsButton")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
 script = ExtResource("1_8ri7a")
 Storage = NodePath("../Storage")
 CharacterCreateScreen = NodePath("../CharacterCreateScreen")
+SettingsScreen = NodePath("../SettingsScreen")
 ChatSelectScreen = NodePath("../ChatSelectScreen")
 CharacterList = NodePath("CharacterList")
 CreateButton = NodePath("CreateButton")
+SettingsButton = NodePath("SettingsButton")
 
 [node name="CharacterList" type="ItemList" parent="CharacterSelectScreen"]
 layout_mode = 1
@@ -53,13 +56,23 @@ fixed_icon_size = Vector2i(60, 60)
 
 [node name="CreateButton" type="Button" parent="CharacterSelectScreen"]
 layout_mode = 0
-offset_left = 82.5
+offset_left = 30.0
 offset_top = 630.0
-offset_right = 322.5
+offset_right = 200.0
 offset_bottom = 690.0
 focus_mode = 0
 theme_override_font_sizes/font_size = 20
-text = "Create Character"
+text = "New Character"
+
+[node name="SettingsButton" type="Button" parent="CharacterSelectScreen"]
+layout_mode = 0
+offset_left = 205.0
+offset_top = 630.0
+offset_right = 375.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Settings"
 
 [node name="CharacterCreateScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "NameInput", "NicknameInput", "BioInput", "IconInput", "CreateButton", "BackButton")]
 visible = false
@@ -135,6 +148,59 @@ text = "Create"
 
 [node name="BackButton" type="Button" parent="CharacterCreateScreen"]
 layout_mode = 0
+offset_left = 220.0
+offset_top = 640.0
+offset_right = 370.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Back"
+
+[node name="SettingsScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "BackButton", "ChatHistoryLengthValue")]
+visible = false
+offset_right = 405.0
+offset_bottom = 720.0
+script = ExtResource("11_5r3ws")
+Storage = NodePath("../Storage")
+CharacterSelectScreen = NodePath("../CharacterSelectScreen")
+BackButton = NodePath("BackButton")
+ChatHistoryLengthValue = NodePath("SettingsList/ChatHistoryLength/Value")
+
+[node name="SettingsList" type="VBoxContainer" parent="SettingsScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 80.0
+offset_bottom = -120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ChatHistoryLength" type="Panel" parent="SettingsScreen/SettingsList"]
+custom_minimum_size = Vector2(405, 80)
+layout_mode = 2
+
+[node name="Heading" type="Label" parent="SettingsScreen/SettingsList/ChatHistoryLength"]
+layout_mode = 0
+offset_right = 202.5
+offset_bottom = 80.0
+text = "Chat History Length"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Value" type="SpinBox" parent="SettingsScreen/SettingsList/ChatHistoryLength"]
+layout_mode = 0
+offset_left = 202.5
+offset_right = 405.0
+offset_bottom = 80.0
+min_value = 1.0
+max_value = 1e+07
+value = 1.0
+rounded = true
+alignment = 1
+update_on_text_changed = true
+
+[node name="BackButton" type="Button" parent="SettingsScreen"]
 offset_left = 220.0
 offset_top = 640.0
 offset_right = 370.0
@@ -361,5 +427,3 @@ offset_bottom = 60.0
 focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Back"
-
-[node name="GDLlama" type="GDLlama" parent="."]

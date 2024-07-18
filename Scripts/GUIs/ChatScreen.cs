@@ -22,8 +22,6 @@ public partial class ChatScreen : Panel {
     private LLMBinding LLMBinding;
     private long ResponseCounter;
 
-    private const int MaxChatMessages = 100;
-
     public override void _Ready() {
         LLMBinding = new LLMBinding(LLM);
         SendButton.Pressed += Send;
@@ -47,7 +45,7 @@ public partial class ChatScreen : Panel {
         // Clear displayed chat messages
         Clear();
         // Display chat messages
-        foreach (ChatMessageRecord ChatMessage in Storage.GetChatMessages(ChatId).TakeLast(MaxChatMessages)) {
+        foreach (ChatMessageRecord ChatMessage in GetChatHistory(ChatId)) {
             AddChatMessage(ChatMessage);
         }
         // Scroll to bottom
@@ -120,7 +118,7 @@ public partial class ChatScreen : Panel {
             // Get target character
             CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
             // Get chat message history
-            IEnumerable<ChatMessageRecord> ChatMessages = Storage.GetChatMessages(ChatId).TakeLast(MaxChatMessages);
+            IEnumerable<ChatMessageRecord> ChatMessages = GetChatHistory(ChatId);
 
             // Build prompt
             StringBuilder PromptBuilder = new();
@@ -172,5 +170,8 @@ public partial class ChatScreen : Panel {
         finally {
             Semaphore.Release();
         }
+    }
+    private IEnumerable<ChatMessageRecord> GetChatHistory(Guid ChatId) {
+        return Storage.GetChatMessages(ChatId).TakeLast(Storage.SaveData.ChatHistoryLength);
     }
 }

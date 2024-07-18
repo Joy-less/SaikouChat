@@ -5,8 +5,8 @@ public partial class ChatSelectScreen : Panel {
     [Export] ChatScreen ChatScreen;
     [Export] CharacterSelectScreen CharacterSelectScreen;
     [Export] ItemList ChatList;
-    [Export] Button CreateButton;
-    [Export] Button BackButton;
+    [Export] BaseButton CreateButton;
+    [Export] BaseButton BackButton;
 
     private readonly Dictionary<long, Guid> ChatIds = [];
     public Guid CharacterId;

@@ -5,8 +5,8 @@ public partial class CharacterCreateScreen : Panel {
     [Export] LineEdit NicknameInput;
     [Export] TextEdit BioInput;
     [Export] TextureButton IconInput;
-    [Export] Button CreateButton;
-    [Export] Button BackButton;
+    [Export] BaseButton CreateButton;
+    [Export] BaseButton BackButton;
 
     private readonly FileDialog IconFileDialog = new() {
         FileMode = FileDialog.FileModeEnum.OpenFile,

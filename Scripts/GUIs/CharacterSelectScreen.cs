@@ -1,15 +1,18 @@
 public partial class CharacterSelectScreen : Panel {
     [Export] Storage Storage;
     [Export] CharacterCreateScreen CharacterCreateScreen;
+    [Export] SettingsScreen SettingsScreen;
     [Export] ChatSelectScreen ChatSelectScreen;
     [Export] ItemList CharacterList;
-    [Export] Button CreateButton;
+    [Export] BaseButton CreateButton;
+    [Export] BaseButton SettingsButton;
 
     private readonly Dictionary<long, Guid> CharacterIds = [];
 
     public override void _Ready() {
         Show();
         CreateButton.Pressed += Create;
+        SettingsButton.Pressed += Settings;
         CharacterList.ItemSelected += SelectCharacter;
     }
     public new void Show() {
@@ -27,6 +30,10 @@ public partial class CharacterSelectScreen : Panel {
     private void Create() {
         Hide();
         CharacterCreateScreen.Show();
+    }
+    private void Settings() {
+        Hide();
+        SettingsScreen.Show();
     }
     private void SelectCharacter(long ItemId) {
         ChatSelectScreen.CharacterId = CharacterIds[ItemId];

@@ -187,7 +187,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Back"
 
-[node name="ChatScreen" type="Panel" parent="." node_paths=PackedStringArray("LLM", "Storage", "ChatSelectScreen", "MessageList", "MessageTemplate", "MessageInput", "TypingIndicator", "SendButton", "GenerateButton", "BackButton")]
+[node name="ChatScreen" type="Panel" parent="." node_paths=PackedStringArray("LLM", "Storage", "ChatSelectScreen", "CharacterIconRect", "CharacterNameLabel", "MessageList", "MessageTemplate", "MessageInput", "TypingIndicator", "SendButton", "GenerateButton", "BackButton")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
@@ -195,13 +195,33 @@ script = ExtResource("9_pfw41")
 LLM = NodePath("../LLM")
 Storage = NodePath("../Storage")
 ChatSelectScreen = NodePath("../ChatSelectScreen")
+CharacterIconRect = NodePath("CharacterIcon")
+CharacterNameLabel = NodePath("CharacterName")
 MessageList = NodePath("MessageList")
 MessageTemplate = NodePath("MessageList/BoxContainer/MessageTemplate")
 MessageInput = NodePath("MessageInput")
 TypingIndicator = NodePath("TypingIndicator")
-SendButton = NodePath("SendPanel/SendButton")
-GenerateButton = NodePath("GeneratePanel/GenerateButton")
+SendButton = NodePath("SendPanel/Send")
+GenerateButton = NodePath("GeneratePanel/Generate")
 BackButton = NodePath("BackButton")
+
+[node name="CharacterIcon" type="TextureRect" parent="ChatScreen"]
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 60.0
+offset_bottom = 60.0
+texture = ExtResource("5_t6ohq")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CharacterName" type="Label" parent="ChatScreen"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 10.0
+offset_right = 245.0
+offset_bottom = 60.0
+text = "Character Name"
+vertical_alignment = 1
 
 [node name="MessageList" type="ScrollContainer" parent="ChatScreen"]
 layout_mode = 1
@@ -213,7 +233,7 @@ offset_bottom = -160.0
 grow_horizontal = 2
 grow_vertical = 2
 follow_focus = true
-horizontal_scroll_mode = 0
+horizontal_scroll_mode = 3
 
 [node name="BoxContainer" type="VBoxContainer" parent="ChatScreen/MessageList"]
 layout_mode = 2
@@ -290,7 +310,7 @@ offset_right = 385.0
 offset_bottom = 655.0
 theme = ExtResource("5_tp71k")
 
-[node name="SendButton" type="TextureButton" parent="ChatScreen/SendPanel"]
+[node name="Send" type="TextureButton" parent="ChatScreen/SendPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -315,7 +335,7 @@ offset_right = 385.0
 offset_bottom = 700.0
 theme = ExtResource("5_tp71k")
 
-[node name="GenerateButton" type="TextureButton" parent="ChatScreen/GeneratePanel"]
+[node name="Generate" type="TextureButton" parent="ChatScreen/GeneratePanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

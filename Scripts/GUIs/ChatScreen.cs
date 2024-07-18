@@ -5,6 +5,8 @@ public partial class ChatScreen : Panel {
     [Export] Node LLM;
     [Export] Storage Storage;
     [Export] ChatSelectScreen ChatSelectScreen;
+    [Export] TextureRect CharacterIconRect;
+    [Export] Label CharacterNameLabel;
     [Export] ScrollContainer MessageList;
     [Export] Control MessageTemplate;
     [Export] TextEdit MessageInput;
@@ -19,6 +21,8 @@ public partial class ChatScreen : Panel {
     
     private LLMBinding LLMBinding;
     private long ResponseCounter;
+
+    private const int MaxChatMessages = 100;
 
     public override void _Ready() {
         LLMBinding = new LLMBinding(LLM);
@@ -36,10 +40,14 @@ public partial class ChatScreen : Panel {
     public new async void Show() {
         base.Show();
 
+        // Display character info
+        CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
+        CharacterIconRect.Texture = Storage.GetImage(Character.Icon);
+        CharacterNameLabel.Text = Character.Name;
         // Clear displayed chat messages
         Clear();
         // Display chat messages
-        foreach (ChatMessageRecord ChatMessage in Storage.GetChatMessages(ChatId)) {
+        foreach (ChatMessageRecord ChatMessage in Storage.GetChatMessages(ChatId).TakeLast(MaxChatMessages)) {
             AddChatMessage(ChatMessage);
         }
         // Scroll to bottom
@@ -112,7 +120,7 @@ public partial class ChatScreen : Panel {
             // Get target character
             CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
             // Get chat message history
-            IEnumerable<ChatMessageRecord> ChatMessages = Storage.GetChatMessages(ChatId).TakeLast(100);
+            IEnumerable<ChatMessageRecord> ChatMessages = Storage.GetChatMessages(ChatId).TakeLast(MaxChatMessages);
 
             // Build prompt
             StringBuilder PromptBuilder = new();

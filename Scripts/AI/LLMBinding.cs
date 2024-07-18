@@ -1,12 +1,12 @@
 public class LLMBinding(Node Inner) {
     public Node Inner = Inner;
-    public string CharacterName {
-        get => (string)Inner.Get("character_name");
-        set => Inner.Set("character_name", value);
+    public string ModelPath {
+        get => (string)Inner.Get("model_path");
+        set => Inner.Set("model_path", value);
     }
-    public string CharacterBio {
-        get => (string)Inner.Get("character_bio");
-        set => Inner.Set("character_bio", value);
+    public int ThreadCount {
+        get => (int)Inner.Get("thread_count");
+        set => Inner.Set("thread_count", value);
     }
 
     public async Task<string> GenerateAsync(string Prompt, string Grammar = "", string Json = "", Action<string> OnPartial = null) {

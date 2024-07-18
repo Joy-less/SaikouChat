@@ -64,6 +64,7 @@ public partial class ChatScreen : Panel {
     private void Send() {
         // Ensure input box is not empty
         if (string.IsNullOrWhiteSpace(MessageInput.Text)) {
+            MessageInput.ReleaseFocus();
             return;
         }
         // Take prompt from input box
@@ -153,6 +154,8 @@ public partial class ChatScreen : Panel {
                 GD.Print(PromptBuilder.ToString());
             }
             
+            // Configure LLM
+            LLMBinding.ModelPath = Storage.SaveData.ModelPath;
             // Generate response
             string Response = (await LLMBinding.PromptAsync(PromptBuilder.ToString(), OnPartial: Text => {
                 if (ChatId == this.ChatId) {

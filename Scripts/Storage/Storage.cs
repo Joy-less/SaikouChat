@@ -28,6 +28,8 @@ public partial class Storage : Node {
         File.WriteAllText(SavePath, JsonConvert.SerializeObject(SaveData, Formatting.Indented));
     }
     public void Migrate() {
+        // null -> 1.0
+        SaveData.Version ??= "1.0";
         // 1.0 -> 1.1
         if (SaveData.Version == "1.0") {
             foreach (CharacterRecord Character in SaveData.Characters.Values) {
@@ -100,6 +102,7 @@ public partial class Storage : Node {
 
 public record SaveRecord {
     public string Version;
+    public string ModelPath;
     public int ChatHistoryLength = 100;
     public Dictionary<Guid, CharacterRecord> Characters = [];
     public Dictionary<Guid, ChatRecord> Chats = [];

@@ -23,7 +23,6 @@ font_size = 18
 
 [node name="LLM" type="Node" parent="."]
 script = ExtResource("2_m72s7")
-model_path = "C:\\Users\\patri\\Downloads\\Meta-Llama-3-8B.Q8_0.gguf"
 
 [node name="Storage" type="Node" parent="."]
 script = ExtResource("3_1yded")
@@ -156,7 +155,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Back"
 
-[node name="SettingsScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "BackButton", "ChatHistoryLengthValue")]
+[node name="SettingsScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "BackButton", "ModelPathValue", "ChatHistoryLengthValue")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
@@ -164,6 +163,7 @@ script = ExtResource("11_5r3ws")
 Storage = NodePath("../Storage")
 CharacterSelectScreen = NodePath("../CharacterSelectScreen")
 BackButton = NodePath("BackButton")
+ModelPathValue = NodePath("SettingsList/ModelPath/Value")
 ChatHistoryLengthValue = NodePath("SettingsList/ChatHistoryLength/Value")
 
 [node name="SettingsList" type="VBoxContainer" parent="SettingsScreen"]
@@ -175,6 +175,25 @@ offset_top = 80.0
 offset_bottom = -120.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="ModelPath" type="Panel" parent="SettingsScreen/SettingsList"]
+custom_minimum_size = Vector2(405, 80)
+layout_mode = 2
+
+[node name="Heading" type="Label" parent="SettingsScreen/SettingsList/ModelPath"]
+layout_mode = 0
+offset_right = 202.5
+offset_bottom = 80.0
+text = "Model Path"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Value" type="LineEdit" parent="SettingsScreen/SettingsList/ModelPath"]
+layout_mode = 0
+offset_left = 202.5
+offset_right = 405.0
+offset_bottom = 80.0
+alignment = 1
 
 [node name="ChatHistoryLength" type="Panel" parent="SettingsScreen/SettingsList"]
 custom_minimum_size = Vector2(405, 80)
@@ -201,6 +220,7 @@ alignment = 1
 update_on_text_changed = true
 
 [node name="BackButton" type="Button" parent="SettingsScreen"]
+layout_mode = 0
 offset_left = 220.0
 offset_top = 640.0
 offset_right = 370.0
@@ -272,6 +292,7 @@ GenerateButton = NodePath("GeneratePanel/Generate")
 BackButton = NodePath("BackButton")
 
 [node name="CharacterIcon" type="TextureRect" parent="ChatScreen"]
+layout_mode = 0
 offset_left = 10.0
 offset_top = 10.0
 offset_right = 60.0

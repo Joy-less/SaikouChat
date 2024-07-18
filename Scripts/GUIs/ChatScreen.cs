@@ -119,8 +119,9 @@ public partial class ChatScreen : Panel {
             PromptBuilder.AppendLine("Instructions:");
             PromptBuilder.AppendLine("""
                 You are the character in a conversation with the user.
-                Respond to the conversation as the character.
+                Add a message to the conversation as the character.
                 Do not break character.
+                Add a different message instead of repeating yourself.
                 """);
             PromptBuilder.AppendLine();
             PromptBuilder.AppendLine("Character:");

@@ -3,8 +3,6 @@ extends Node
 @export_file("*.gguf") var model_path:String
 @export var thread_count:int = 1
 
-var mutex := Mutex.new()
-
 func generate_async(prompt:String, grammar:String, json:String, on_partial:Callable) -> String:
 	# Setup generator
 	var generator := GDLlama.new()
@@ -29,22 +27,16 @@ func generate_async(prompt:String, grammar:String, json:String, on_partial:Calla
 	return result
 
 func prompt_async(prompt:String, min_length:int, max_length:int, on_partial:Callable) -> String:
+	# Create response schema
 	var schema:String = """
 		{
-			"type": "object",
-			"properties": {
-				"response": {
-					"type": "string",
-					"minLength": {min_length},
-					"maxLength": {max_length}
-				}
-			},
-			"required": ["response"]
+			"type": "string",
+			"minLength": {min_length},
+			"maxLength": {max_length}
 		}
 		""".format({"min_length": min_length, "max_length": max_length})
-	
 	# Generate result
 	var result = JSON.parse_string(await generate_async(prompt, "", schema, on_partial))
 	if not result:
 		return ""
-	return result["response"]
+	return result

@@ -364,18 +364,18 @@ offset_top = 80.0
 offset_bottom = -160.0
 grow_horizontal = 2
 grow_vertical = 2
-follow_focus = true
-horizontal_scroll_mode = 3
+horizontal_scroll_mode = 0
 
 [node name="BoxContainer" type="VBoxContainer" parent="ChatScreen/MessageList"]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="MessageTemplate" type="MarginContainer" parent="ChatScreen/MessageList/BoxContainer"]
 visible = false
 layout_mode = 2
 
 [node name="Background" type="Panel" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate"]
-custom_minimum_size = Vector2(405, 80)
+custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 theme = ExtResource("5_tp71k")
 

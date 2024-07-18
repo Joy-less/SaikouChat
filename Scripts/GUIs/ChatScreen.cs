@@ -17,7 +17,7 @@ public partial class ChatScreen : Panel {
 
     private readonly SemaphoreSlim Semaphore = new(1, 1);
     public Guid ChatId;
-    private double TypingIndicatorTimeLeft;
+    private CharacterState CharacterState;
     
     private LLMBinding LLMBinding;
     private long ResponseCounter;
@@ -32,11 +32,13 @@ public partial class ChatScreen : Panel {
     }
     public override void _Process(double Delta) {
         // Update typing indicator
-        TypingIndicatorTimeLeft = Mathf.Max(0, TypingIndicatorTimeLeft - Delta);
-        TypingIndicator.Visible = TypingIndicatorTimeLeft > 0;
-        if (ChatId != default) {
+        if (CharacterState is not CharacterState.Idle && ChatId != default) {
+            TypingIndicator.Show();
             CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
-            TypingIndicator.Text = $"{Character.Name} is typing...";
+            TypingIndicator.Text = $"{Character.Name} is {(CharacterState is CharacterState.Thinking ? "thinking" : "typing")}...";
+        }
+        else {
+            TypingIndicator.Hide();
         }
     }
     public new async void Show() {
@@ -175,28 +177,40 @@ public partial class ChatScreen : Panel {
             if (OS.IsDebugBuild()) {
                 GD.Print(PromptBuilder.ToString());
             }
-            
-            // Configure LLM
+
+            // Configure LLM model
+            if (!File.Exists(Storage.SaveData.ModelPath)) {
+                GD.PushError("Model path not found");
+                throw new InvalidOperationException();
+            }
             LLMBinding.ModelPath = Storage.SaveData.ModelPath;
+
             // Generate response
+            CharacterState = CharacterState.Thinking;
             string Response = (await LLMBinding.PromptAsync(PromptBuilder.ToString(), OnPartial: Text => {
                 if (ChatId == this.ChatId) {
-                    TypingIndicatorTimeLeft = 3;
+                    CharacterState = CharacterState.Typing;
                 }
             })).Trim();
             // Send chat message
             ChatMessageRecord ChatMessage = Storage.CreateChatMessage(ChatId, Response, Character.Id);
-            TypingIndicatorTimeLeft = 0;
             // Add chat message to list
             if (ChatId == this.ChatId) {
                 AddChatMessage(ChatMessage);
             }
         }
         finally {
+            CharacterState = CharacterState.Idle;
             Semaphore.Release();
         }
     }
     private IEnumerable<ChatMessageRecord> GetChatHistory(Guid ChatId) {
         return Storage.GetChatMessages(ChatId).TakeLast(Storage.SaveData.ChatHistoryLength);
     }
+}
+
+public enum CharacterState {
+    Idle,
+    Thinking,
+    Typing,
 }

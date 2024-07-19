@@ -103,6 +103,7 @@ public record SaveRecord {
     public string Version;
     public string ModelPath;
     public int ChatHistoryLength = 100;
+    public int MaxMessageLength = 500;
     public string Instructions = """
         You are the character in a conversation with the user.
         Add a message to the conversation in character.

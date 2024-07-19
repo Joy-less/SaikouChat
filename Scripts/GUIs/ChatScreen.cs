@@ -182,7 +182,7 @@ public partial class ChatScreen : Panel {
 
             // Generate response
             CharacterState = CharacterState.Thinking;
-            string Response = (await LLMBinding.PromptAsync(Prompt, OnPartial: Text => {
+            string Response = (await LLMBinding.PromptAsync(Prompt, MaxLength: Storage.SaveData.MaxMessageLength, OnPartial: Text => {
                 if (ChatId == this.ChatId) {
                     CharacterState = CharacterState.Typing;
                 }

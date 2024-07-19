@@ -1,3 +1,4 @@
+using System.Linq;
 using Newtonsoft.Json;
 
 public partial class Storage : Node {
@@ -30,15 +31,6 @@ public partial class Storage : Node {
     public void Migrate() {
         // null -> 1.0
         SaveData.Version ??= "1.0";
-        // 1.0 -> 1.1
-        if (SaveData.Version == "1.0") {
-            foreach (CharacterRecord Character in SaveData.Characters.Values) {
-                if (Character.Icon is Guid IconId && IconId == default) {
-                    Character.Icon = null;
-                }
-            }
-            SaveData.Version = "1.1";
-        }
         // Save data in new format
         Save();
     }
@@ -92,10 +84,18 @@ public partial class Storage : Node {
         Save();
         return ChatMessage;
     }
-    public List<ChatMessageRecord> GetChatMessages(Guid ChatId) {
-        List<ChatMessageRecord> ChatMessages = [.. SaveData.Chats[ChatId].ChatMessages.Values];
-        ChatMessages.Sort((A, B) => A.CreatedTime.CompareTo(B.CreatedTime));
-        return ChatMessages;
+    public IOrderedEnumerable<CharacterRecord> GetCharacters() {
+        return SaveData.Characters.Values
+            .OrderByDescending(Character => Character.CreatedTime);
+    }
+    public IOrderedEnumerable<ChatRecord> GetChats(Guid CharacterId) {
+        return SaveData.Chats.Values
+            .Where(Chat => Chat.CharacterId == CharacterId)
+            .OrderByDescending(Chat => Chat.CreatedTime);
+    }
+    public IOrderedEnumerable<ChatMessageRecord> GetChatMessages(Guid ChatId) {
+        return SaveData.Chats[ChatId].ChatMessages.Values
+            .OrderBy(ChatMessage => ChatMessage.CreatedTime);
     }
 }
 
@@ -124,6 +124,7 @@ public record CharacterRecord : Record {
 }
 public record ChatRecord : Record {
     public Guid CharacterId;
+    public string SceneDescription = "";
     public Dictionary<Guid, ChatMessageRecord> ChatMessages = [];
     public DateTime CreatedTime = DateTime.UtcNow;
 }

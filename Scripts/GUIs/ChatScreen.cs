@@ -1,12 +1,13 @@
 using System.Linq;
-using System.Text;
 
 public partial class ChatScreen : Panel {
     [Export] Node LLM;
     [Export] Storage Storage;
     [Export] ChatSelectScreen ChatSelectScreen;
+    [Export] SceneCreateScreen SceneCreateScreen;
     [Export] TextureRect CharacterIconRect;
-    [Export] Label CharacterNameLabel;
+    [Export] BaseButton EditSceneButton;
+    [Export] BaseButton ViewPinsButton;
     [Export] ScrollContainer MessageList;
     [Export] Control MessageTemplate;
     [Export] TextEdit MessageInput;
@@ -27,6 +28,7 @@ public partial class ChatScreen : Panel {
         SendButton.Pressed += Send;
         GenerateButton.Pressed += Generate;
         BackButton.Pressed += Back;
+        EditSceneButton.Pressed += EditScene;
         MessageList.GetVScrollBar().Changed += UpdateScroll;
         MessageInput.TextChanged += UpdateText;
     }
@@ -44,10 +46,10 @@ public partial class ChatScreen : Panel {
     public new async void Show() {
         base.Show();
 
-        // Display character info
+        // Display character icon
         CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
         CharacterIconRect.Texture = Storage.GetImage(Character.Icon);
-        CharacterNameLabel.Text = Character.Name;
+        CharacterIconRect.TooltipText = Character.Name;
         // Clear displayed chat messages
         Clear();
         // Display chat messages
@@ -57,6 +59,11 @@ public partial class ChatScreen : Panel {
         // Scroll to bottom
         await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
         UpdateScroll();
+    }
+    public new void Hide() {
+        base.Hide();
+
+        Clear();
     }
     public void Clear() {
         // Clear displayed chat messages
@@ -86,8 +93,11 @@ public partial class ChatScreen : Panel {
     }
     private void Back() {
         Hide();
-        Clear();
         ChatSelectScreen.Show();
+    }
+    private void EditScene() {
+        Hide();
+        SceneCreateScreen.Show();
     }
     private void UpdateScroll() {
         // Scroll to bottom when chat message added
@@ -151,31 +161,16 @@ public partial class ChatScreen : Panel {
             IEnumerable<ChatMessageRecord> ChatMessages = GetChatHistory(ChatId);
 
             // Build prompt
-            StringBuilder PromptBuilder = new();
-            PromptBuilder.AppendLine("Instructions:");
-            PromptBuilder.AppendLine(Storage.SaveData.Instructions);
-            PromptBuilder.AppendLine();
-            PromptBuilder.AppendLine("Information:");
-            PromptBuilder.AppendLine($"""
-                User's time: {DateTimeOffset.Now.ToConciseString()}
-                """);
-            PromptBuilder.AppendLine();
-            PromptBuilder.AppendLine("Character:");
-            PromptBuilder.AppendLine($"""
-                Name: "{Character.Name}"
-                Bio: "{Character.Bio.Replace("\"", "\\\"")}"
-                """);
-            PromptBuilder.AppendLine();
-            PromptBuilder.AppendLine("Conversation:");
-            foreach (ChatMessageRecord CurrentChatMessage in ChatMessages) {
-                PromptBuilder.Append(CurrentChatMessage.Author is not null ? $"\"{Character.Name}\"" : "User");
-                PromptBuilder.AppendLine($": \"{CurrentChatMessage.Message}\"");
-            }
-            PromptBuilder.Append($"\"{Character.Name}\": ");
+            string Prompt = PromptBuilder.Build(
+                Instructions: Storage.SaveData.Instructions,
+                SceneDescription: Storage.SaveData.Chats[ChatId].SceneDescription,
+                Character: Character,
+                ChatMessages: ChatMessages
+            );
             
             // Print prompt (debug)
             if (OS.IsDebugBuild()) {
-                GD.Print(PromptBuilder.ToString());
+                GD.Print(Prompt);
             }
 
             // Configure LLM model
@@ -187,7 +182,7 @@ public partial class ChatScreen : Panel {
 
             // Generate response
             CharacterState = CharacterState.Thinking;
-            string Response = (await LLMBinding.PromptAsync(PromptBuilder.ToString(), OnPartial: Text => {
+            string Response = (await LLMBinding.PromptAsync(Prompt, OnPartial: Text => {
                 if (ChatId == this.ChatId) {
                     CharacterState = CharacterState.Typing;
                 }
@@ -198,6 +193,10 @@ public partial class ChatScreen : Panel {
             if (ChatId == this.ChatId) {
                 AddChatMessage(ChatMessage);
             }
+        }
+        catch (Exception Ex) {
+            GD.PushError(Ex);
+            throw;
         }
         finally {
             CharacterState = CharacterState.Idle;

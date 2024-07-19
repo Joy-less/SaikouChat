@@ -22,7 +22,7 @@ public partial class ChatSelectScreen : Panel {
         // Clear displayed chats
         ChatList.Clear();
         // Display chats
-        foreach (ChatRecord Chat in Storage.SaveData.Chats.Values.Where(Chat => Chat.CharacterId == CharacterId)) {
+        foreach (ChatRecord Chat in Storage.GetChats(CharacterId)) {
             string ChatTitle = Chat.CreatedTime.ToLocalTime().ToConciseString();
             long ItemId = ChatList.AddItem(ChatTitle);
             ChatIds[ItemId] = Chat.Id;

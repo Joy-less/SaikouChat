@@ -21,7 +21,7 @@ public partial class CharacterSelectScreen : Panel {
         // Clear displayed characters
         CharacterList.Clear();
         // Display characters
-        foreach (CharacterRecord Character in Storage.SaveData.Characters.Values) {
+        foreach (CharacterRecord Character in Storage.GetCharacters()) {
             long ItemId = CharacterList.AddItem(Character.Name, Storage.GetImage(Character.Icon));
             CharacterIds[ItemId] = Character.Id;
         }

@@ -21,7 +21,10 @@ public partial class CharacterCreateScreen : Panel {
         IconInput.Pressed += SelectIcon;
         IconFileDialog.FileSelected += IconChosen;
     }
-    public void Clear() {
+    public new void Hide() {
+        base.Hide();
+
+        // Clear input boxes
         NameInput.Clear();
         BioInput.Clear();
         IconInput.TextureNormal = Storage.Placeholder;
@@ -32,12 +35,10 @@ public partial class CharacterCreateScreen : Panel {
         Storage.CreateCharacter(NameInput.Text, BioInput.Text, Icon);
 
         Hide();
-        Clear();
         CharacterSelectScreen.Show();
     }
     private void Back() {
         Hide();
-        Clear();
         CharacterSelectScreen.Show();
     }
     private void SelectIcon() {

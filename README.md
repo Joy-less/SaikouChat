@@ -43,6 +43,7 @@ Here are some free models:
 ## Tips
 
 - You can find detailed anime/manga character biographies on [MyAnimeList](https://myanimelist.net/character.php)
-- To regenerate a message, press the Regenerate button to delete it and try again. (Warning: Also deletes all subsequent messages)
+- To regenerate a message, press the Regenerate button to delete it and try again (warning: also deletes all subsequent messages)
 - To delete a message, press the Delete button
 - To generate a message without sending one, press the Generate button
+- To describe the setting of your conversation, press the Edit Scene Description button

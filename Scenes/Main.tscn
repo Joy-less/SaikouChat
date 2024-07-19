@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://b4qiqpcdos7u5"]
+[gd_scene load_steps=21 format=3 uid="uid://b4qiqpcdos7u5"]
 
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterSelectScreen.cs" id="1_8ri7a"]
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterCreateScreen.cs" id="2_hptii"]
@@ -13,6 +13,9 @@
 [ext_resource type="Texture2D" uid="uid://dqamrq0avf0p8" path="res://Images/Generate.png" id="10_lvru2"]
 [ext_resource type="Script" path="res://Scripts/GUIs/SettingsScreen.cs" id="11_5r3ws"]
 [ext_resource type="Texture2D" uid="uid://b06ay7iowo8ab" path="res://Images/Delete.png" id="11_30l5g"]
+[ext_resource type="Texture2D" uid="uid://cfrx14thelecj" path="res://Images/Pin.png" id="11_ib6ie"]
+[ext_resource type="Texture2D" uid="uid://nd3oh0p4ealh" path="res://Images/Scene.png" id="11_t547m"]
+[ext_resource type="Script" path="res://Scripts/GUIs/SceneCreateScreen.cs" id="16_n10yx"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ou8nb"]
 font_size = 26
@@ -318,7 +321,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Back"
 
-[node name="ChatScreen" type="Panel" parent="." node_paths=PackedStringArray("LLM", "Storage", "ChatSelectScreen", "CharacterIconRect", "CharacterNameLabel", "MessageList", "MessageTemplate", "MessageInput", "TypingIndicator", "SendButton", "GenerateButton", "BackButton")]
+[node name="ChatScreen" type="Panel" parent="." node_paths=PackedStringArray("LLM", "Storage", "ChatSelectScreen", "SceneCreateScreen", "CharacterIconRect", "EditSceneButton", "ViewPinsButton", "MessageList", "MessageTemplate", "MessageInput", "TypingIndicator", "SendButton", "GenerateButton", "BackButton")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
@@ -326,8 +329,10 @@ script = ExtResource("9_pfw41")
 LLM = NodePath("../LLM")
 Storage = NodePath("../Storage")
 ChatSelectScreen = NodePath("../ChatSelectScreen")
+SceneCreateScreen = NodePath("../SceneCreateScreen")
 CharacterIconRect = NodePath("CharacterIcon")
-CharacterNameLabel = NodePath("CharacterName")
+EditSceneButton = NodePath("EditScenePanel/EditScene")
+ViewPinsButton = NodePath("ViewPinsPanel/ViewPins")
 MessageList = NodePath("MessageList")
 MessageTemplate = NodePath("MessageList/BoxContainer/MessageTemplate")
 MessageInput = NodePath("MessageInput")
@@ -346,14 +351,55 @@ texture = ExtResource("5_t6ohq")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="CharacterName" type="Label" parent="ChatScreen"]
+[node name="EditScenePanel" type="Panel" parent="ChatScreen"]
 layout_mode = 0
-offset_left = 80.0
-offset_top = 10.0
-offset_right = 245.0
-offset_bottom = 60.0
-text = "Character Name"
-vertical_alignment = 1
+offset_left = 100.0
+offset_top = 12.5
+offset_right = 145.0
+offset_bottom = 57.5
+theme = ExtResource("5_tp71k")
+
+[node name="EditScene" type="TextureButton" parent="ChatScreen/EditScenePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.5
+offset_top = 2.5
+offset_right = -2.5
+offset_bottom = -2.5
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Edit Scene Description"
+focus_mode = 0
+texture_normal = ExtResource("11_t547m")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ViewPinsPanel" type="Panel" parent="ChatScreen"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 12.5
+offset_right = 195.0
+offset_bottom = 57.5
+theme = ExtResource("5_tp71k")
+
+[node name="ViewPins" type="TextureButton" parent="ChatScreen/ViewPinsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.5
+offset_top = 2.5
+offset_right = -2.5
+offset_bottom = -2.5
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Pinned Messages"
+focus_mode = 0
+texture_normal = ExtResource("11_ib6ie")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="MessageList" type="ScrollContainer" parent="ChatScreen"]
 layout_mode = 1
@@ -516,11 +562,56 @@ ignore_texture_size = true
 stretch_mode = 5
 
 [node name="BackButton" type="Button" parent="ChatScreen"]
-layout_mode = 0
-offset_left = 245.0
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -130.0
 offset_top = 10.0
-offset_right = 395.0
+offset_right = -10.0
 offset_bottom = 60.0
+grow_horizontal = 0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Back"
+
+[node name="SceneCreateScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "ChatScreen", "DescriptionInput", "CreateButton", "BackButton")]
+visible = false
+offset_right = 405.0
+offset_bottom = 720.0
+script = ExtResource("16_n10yx")
+Storage = NodePath("../Storage")
+ChatScreen = NodePath("../ChatScreen")
+DescriptionInput = NodePath("DescriptionInput")
+CreateButton = NodePath("CreateButton")
+BackButton = NodePath("BackButton")
+
+[node name="DescriptionInput" type="TextEdit" parent="SceneCreateScreen"]
+layout_mode = 2
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 350.0
+offset_bottom = 600.0
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Describe the scene"
+wrap_mode = 1
+
+[node name="CreateButton" type="Button" parent="SceneCreateScreen"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 640.0
+offset_right = 185.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "OK"
+
+[node name="BackButton" type="Button" parent="SceneCreateScreen"]
+layout_mode = 0
+offset_left = 220.0
+offset_top = 640.0
+offset_right = 370.0
+offset_bottom = 690.0
 focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Back"

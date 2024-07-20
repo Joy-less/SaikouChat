@@ -84,18 +84,21 @@ public partial class Storage : Node {
         Save();
         return ChatMessage;
     }
-    public IOrderedEnumerable<CharacterRecord> GetCharacters() {
+    public IEnumerable<CharacterRecord> GetCharacters() {
         return SaveData.Characters.Values
             .OrderByDescending(Character => Character.CreatedTime);
     }
-    public IOrderedEnumerable<ChatRecord> GetChats(Guid CharacterId) {
+    public IEnumerable<ChatRecord> GetChats(Guid CharacterId) {
         return SaveData.Chats.Values
             .Where(Chat => Chat.CharacterId == CharacterId)
             .OrderByDescending(Chat => Chat.CreatedTime);
     }
-    public IOrderedEnumerable<ChatMessageRecord> GetChatMessages(Guid ChatId) {
+    public IEnumerable<ChatMessageRecord> GetChatMessages(Guid ChatId) {
         return SaveData.Chats[ChatId].ChatMessages.Values
             .OrderBy(ChatMessage => ChatMessage.CreatedTime);
+    }
+    public IEnumerable<ChatMessageRecord> GetPinnedChatMessages(Guid ChatId) {
+        return GetChatMessages(ChatId).Where(ChatMessage => ChatMessage.Pinned);
     }
 }
 
@@ -124,6 +127,7 @@ public record ChatRecord : Record {
 public record ChatMessageRecord : Record {
     public string Message;
     public Guid? Author;
+    public bool Pinned;
     public DateTime CreatedTime = DateTime.UtcNow;
 }
 public record SettingsRecord : Record {

@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://b4qiqpcdos7u5"]
+[gd_scene load_steps=22 format=3 uid="uid://b4qiqpcdos7u5"]
 
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterSelectScreen.cs" id="1_8ri7a"]
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterCreateScreen.cs" id="2_hptii"]
@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://b06ay7iowo8ab" path="res://Images/Delete.png" id="11_30l5g"]
 [ext_resource type="Texture2D" uid="uid://cfrx14thelecj" path="res://Images/Pin.png" id="11_ib6ie"]
 [ext_resource type="Texture2D" uid="uid://nd3oh0p4ealh" path="res://Images/Scene.png" id="11_t547m"]
+[ext_resource type="Texture2D" uid="uid://cb6h8l8vgy61x" path="res://Images/PinPressed.png" id="13_t3j3p"]
 [ext_resource type="Script" path="res://Scripts/GUIs/SceneCreateScreen.cs" id="16_n10yx"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ou8nb"]
@@ -361,7 +362,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Back"
 
-[node name="ChatScreen" type="Panel" parent="." node_paths=PackedStringArray("LLM", "Storage", "ChatSelectScreen", "SceneCreateScreen", "CharacterIconRect", "EditSceneButton", "ViewPinsButton", "MessageList", "MessageTemplate", "MessageInput", "TypingIndicator", "SendButton", "GenerateButton", "BackButton")]
+[node name="ChatScreen" type="Panel" parent="." node_paths=PackedStringArray("LLM", "Storage", "ChatSelectScreen", "SceneCreateScreen", "CharacterIconRect", "EditSceneButton", "PinnedMessagesButton", "MessageList", "MessageTemplate", "MessageInput", "TypingIndicator", "SendButton", "GenerateButton", "BackButton")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
@@ -372,7 +373,7 @@ ChatSelectScreen = NodePath("../ChatSelectScreen")
 SceneCreateScreen = NodePath("../SceneCreateScreen")
 CharacterIconRect = NodePath("CharacterIcon")
 EditSceneButton = NodePath("EditScenePanel/EditScene")
-ViewPinsButton = NodePath("ViewPinsPanel/ViewPins")
+PinnedMessagesButton = NodePath("PinnedMessagesPanel/PinnedMessages")
 MessageList = NodePath("MessageList")
 MessageTemplate = NodePath("MessageList/BoxContainer/MessageTemplate")
 MessageInput = NodePath("MessageInput")
@@ -416,7 +417,7 @@ texture_normal = ExtResource("11_t547m")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="ViewPinsPanel" type="Panel" parent="ChatScreen"]
+[node name="PinnedMessagesPanel" type="Panel" parent="ChatScreen"]
 layout_mode = 0
 offset_left = 150.0
 offset_top = 12.5
@@ -424,7 +425,7 @@ offset_right = 195.0
 offset_bottom = 57.5
 theme = ExtResource("5_tp71k")
 
-[node name="ViewPins" type="TextureButton" parent="ChatScreen/ViewPinsPanel"]
+[node name="PinnedMessages" type="TextureButton" parent="ChatScreen/PinnedMessagesPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -484,6 +485,22 @@ grow_horizontal = 2
 text = "Author"
 label_settings = SubResource("LabelSettings_3cx6t")
 text_overrun_behavior = 3
+
+[node name="PinButton" type="TextureButton" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate/Background"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -105.0
+offset_right = -80.0
+offset_bottom = 25.0
+grow_horizontal = 0
+tooltip_text = "Regenerate"
+toggle_mode = true
+texture_normal = ExtResource("11_ib6ie")
+texture_pressed = ExtResource("13_t3j3p")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="RegenerateButton" type="TextureButton" parent="ChatScreen/MessageList/BoxContainer/MessageTemplate/Background"]
 layout_mode = 1

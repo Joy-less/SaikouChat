@@ -1,7 +1,7 @@
 using System.Text;
 
 public static class PromptBuilder {
-    public static string Build(string Instructions, string SceneDescription, CharacterRecord Character, IEnumerable<ChatMessageRecord> ChatMessages) {
+    public static string Build(string Instructions, string SceneDescription, CharacterRecord Character, IEnumerable<ChatMessageRecord> ChatMessages, IEnumerable<ChatMessageRecord> PinnedChatMessages) {
         StringBuilder PromptBuilder = new();
 
         PromptBuilder.AppendLine("Instructions:");
@@ -22,10 +22,17 @@ public static class PromptBuilder {
             """);
         PromptBuilder.AppendLine();
 
+        PromptBuilder.AppendLine("Pinned Messages:");
+        foreach (ChatMessageRecord PinnedChatMessage in PinnedChatMessages) {
+            PromptBuilder.Append(PinnedChatMessage.Author is not null ? $"\"{Character.Name}\"" : "User");
+            PromptBuilder.AppendLine($": \"{PinnedChatMessage.Message}\"");
+        }
+        PromptBuilder.AppendLine();
+
         PromptBuilder.AppendLine("Conversation:");
-        foreach (ChatMessageRecord CurrentChatMessage in ChatMessages) {
-            PromptBuilder.Append(CurrentChatMessage.Author is not null ? $"\"{Character.Name}\"" : "User");
-            PromptBuilder.AppendLine($": \"{CurrentChatMessage.Message}\"");
+        foreach (ChatMessageRecord ChatMessage in ChatMessages) {
+            PromptBuilder.Append(ChatMessage.Author is not null ? $"\"{Character.Name}\"" : "User");
+            PromptBuilder.AppendLine($": \"{ChatMessage.Message}\"");
         }
         PromptBuilder.Append($"\"{Character.Name}\": ");
 

@@ -7,7 +7,7 @@ public partial class ChatScreen : Panel {
     [Export] SceneCreateScreen SceneCreateScreen;
     [Export] TextureRect CharacterIconRect;
     [Export] BaseButton EditSceneButton;
-    [Export] BaseButton ViewPinsButton;
+    [Export] BaseButton PinnedMessagesButton;
     [Export] ScrollContainer MessageList;
     [Export] Control MessageTemplate;
     [Export] TextEdit MessageInput;
@@ -19,6 +19,7 @@ public partial class ChatScreen : Panel {
     private readonly SemaphoreSlim Semaphore = new(1, 1);
     public Guid ChatId;
     private CharacterState CharacterState;
+    private bool FilterPinnedMessages;
     
     private LLMBinding LLMBinding;
     private long ResponseCounter;
@@ -29,6 +30,7 @@ public partial class ChatScreen : Panel {
         GenerateButton.Pressed += Generate;
         BackButton.Pressed += Back;
         EditSceneButton.Pressed += EditScene;
+        PinnedMessagesButton.Pressed += PinnedMessages;
         MessageList.GetVScrollBar().Changed += UpdateScroll;
         MessageInput.TextChanged += UpdateText;
     }
@@ -52,8 +54,12 @@ public partial class ChatScreen : Panel {
         CharacterIconRect.TooltipText = Character.Name;
         // Clear displayed chat messages
         Clear();
+        // Get filtered chat messages
+        IEnumerable<ChatMessageRecord> ChatMessagesToShow = FilterPinnedMessages
+            ? Storage.GetPinnedChatMessages(ChatId)
+            : GetChatHistory(ChatId);
         // Display chat messages
-        foreach (ChatMessageRecord ChatMessage in GetChatHistory(ChatId)) {
+        foreach (ChatMessageRecord ChatMessage in ChatMessagesToShow) {
             AddChatMessage(ChatMessage);
         }
         // Scroll to bottom
@@ -99,6 +105,10 @@ public partial class ChatScreen : Panel {
         Hide();
         SceneCreateScreen.Show();
     }
+    private void PinnedMessages() {
+        FilterPinnedMessages = !FilterPinnedMessages;
+        Show();
+    }
     private void UpdateScroll() {
         // Scroll to bottom when chat message added
         MessageList.GetVScrollBar().Value = MessageList.GetVScrollBar().MaxValue;
@@ -108,6 +118,17 @@ public partial class ChatScreen : Panel {
         if (MessageInput.Text.ContainsAny(['\r', '\n'])) {
             Send();
         }
+    }
+    private bool Pin(Guid ChatId, Guid ChatMessageId) {
+        ChatRecord Chat = Storage.SaveData.Chats[ChatId];
+        ChatMessageRecord ChatMessage = Chat.ChatMessages[ChatMessageId];
+
+        // Toggle chat message pinned
+        ChatMessage.Pinned = !ChatMessage.Pinned;
+        Storage.Save();
+
+        // Return new pinned value
+        return ChatMessage.Pinned;
     }
     private void Regenerate(Guid ChatId, Guid ChatMessageId) {
         ChatRecord Chat = Storage.SaveData.Chats[ChatId];
@@ -131,19 +152,29 @@ public partial class ChatScreen : Panel {
     }
     private void AddChatMessage(ChatMessageRecord ChatMessage, bool GenerateResponse = false) {
         Control Message = (Control)MessageTemplate.Duplicate();
+
+        // Get message sub-nodes
+        Label AuthorNameLabel = Message.GetNode<Label>("Background/AuthorName");
+        TextureRect AuthorIconRect = Message.GetNode<TextureRect>("Background/AuthorIcon");
+        TextEdit MessageLabel = Message.GetNode<TextEdit>("MessageContainer/MessageLabel");
+        BaseButton PinButton = Message.GetNode<BaseButton>("Background/PinButton");
+        BaseButton RegenerateButton = Message.GetNode<BaseButton>("Background/RegenerateButton");
+        BaseButton DeleteButton = Message.GetNode<BaseButton>("Background/DeleteButton");
+
         // Get chat message author
         CharacterRecord Author = ChatMessage.Author is Guid AuthorId ? Storage.SaveData.Characters[AuthorId] : null;
         // Display author name
-        Message.GetNode<Label>("Background/AuthorName").Text = Author is not null ? Author.Name : "You";
+        AuthorNameLabel.Text = Author is not null ? Author.Name : "You";
         // Display author icon
-        Texture2D AuthorIcon = Storage.GetImage(Author is not null ? Author.Icon : default);
-        Message.GetNode<TextureRect>("Background/AuthorIcon").Texture = AuthorIcon;
+        AuthorIconRect.Texture = Storage.GetImage(Author is not null ? Author.Icon : default);
         // Display message
-        Message.GetNode<TextEdit>("MessageContainer/MessageLabel").Text = ChatMessage.Message;
-        // Connect regenerate button
-        Message.GetNode<BaseButton>("Background/RegenerateButton").Pressed += () => Regenerate(ChatId, ChatMessage.Id);
-        // Connect delete button
-        Message.GetNode<BaseButton>("Background/DeleteButton").Pressed += () => Delete(ChatId, ChatMessage.Id);
+        MessageLabel.Text = ChatMessage.Message;
+        // Display pinned indicator
+        PinButton.ButtonPressed = ChatMessage.Pinned;
+        // Connect buttons
+        PinButton.Pressed += () => PinButton.ButtonPressed = Pin(ChatId, ChatMessage.Id);
+        RegenerateButton.Pressed += () => Regenerate(ChatId, ChatMessage.Id);
+        DeleteButton.Pressed += () => Delete(ChatId, ChatMessage.Id);
         // Add chat message
         Message.Show();
         MessageTemplate.GetParent().AddChild(Message);
@@ -157,15 +188,14 @@ public partial class ChatScreen : Panel {
         try {
             // Get target character
             CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
-            // Get chat message history
-            IEnumerable<ChatMessageRecord> ChatMessages = GetChatHistory(ChatId);
 
             // Build prompt
             string Prompt = PromptBuilder.Build(
                 Instructions: Storage.SaveData.Settings.Instructions,
                 SceneDescription: Storage.SaveData.Chats[ChatId].SceneDescription,
                 Character: Character,
-                ChatMessages: ChatMessages
+                ChatMessages: GetChatHistory(ChatId),
+                PinnedChatMessages: Storage.GetPinnedChatMessages(ChatId)
             );
             
             // Print prompt (debug)

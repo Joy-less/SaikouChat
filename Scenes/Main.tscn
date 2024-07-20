@@ -171,13 +171,14 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Back"
 
-[node name="SettingsScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "BackButton", "ModelPathValue", "ChatHistoryLengthValue", "MaxMessageLengthValue", "InstructionsValue")]
+[node name="SettingsScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "ResetSettingsButton", "BackButton", "ModelPathValue", "ChatHistoryLengthValue", "MaxMessageLengthValue", "InstructionsValue")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
 script = ExtResource("11_5r3ws")
 Storage = NodePath("../Storage")
 CharacterSelectScreen = NodePath("../CharacterSelectScreen")
+ResetSettingsButton = NodePath("ResetSettingsButton")
 BackButton = NodePath("BackButton")
 ModelPathValue = NodePath("SettingsList/ModelPath/Value")
 ChatHistoryLengthValue = NodePath("SettingsList/ChatHistoryLength/Value")
@@ -295,6 +296,16 @@ offset_left = -202.5
 grow_horizontal = 0
 grow_vertical = 2
 wrap_mode = 1
+
+[node name="ResetSettingsButton" type="Button" parent="SettingsScreen"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 640.0
+offset_right = 185.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Reset Settings"
 
 [node name="BackButton" type="Button" parent="SettingsScreen"]
 layout_mode = 0

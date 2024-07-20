@@ -1,6 +1,7 @@
 public partial class SettingsScreen : Panel {
     [Export] Storage Storage;
     [Export] CharacterSelectScreen CharacterSelectScreen;
+    [Export] BaseButton ResetSettingsButton;
     [Export] BaseButton BackButton;
     [Export] LineEdit ModelPathValue;
     [Export] SpinBox ChatHistoryLengthValue;
@@ -15,6 +16,7 @@ public partial class SettingsScreen : Panel {
     };
 
     public override void _Ready() {
+        ResetSettingsButton.Pressed += ResetSettings;
         BackButton.Pressed += Back;
         ModelPathValue.FocusEntered += SelectModel;
         ModelFileDialog.FileSelected += SelectModel;
@@ -39,6 +41,18 @@ public partial class SettingsScreen : Panel {
         Storage.Save();
     }
     
+    private void ResetSettings() {
+        // Set settings to defaults
+        SaveRecord DefaultSaveData = new();
+        Storage.SaveData.ModelPath = DefaultSaveData.ModelPath;
+        Storage.SaveData.ChatHistoryLength = DefaultSaveData.ChatHistoryLength;
+        Storage.SaveData.MaxMessageLength = DefaultSaveData.MaxMessageLength;
+        Storage.SaveData.Instructions = DefaultSaveData.Instructions;
+        Storage.Save();
+
+        // Show reset settings
+        Show();
+    }
     private void Back() {
         Hide();
         CharacterSelectScreen.Show();

@@ -25,26 +25,25 @@ public partial class SettingsScreen : Panel {
         base.Show();
 
         // Load current settings
-        ModelPathValue.Text = Storage.SaveData.Settings.ModelPath;
-        ChatHistoryLengthValue.Value = Storage.SaveData.Settings.ChatHistoryLength;
-        MaxMessageLengthValue.Value = Storage.SaveData.Settings.MaxMessageLength;
-        InstructionsValue.Text = Storage.SaveData.Settings.Instructions;
+        ModelPathValue.Text = Storage.GetSettings().ModelPath;
+        ChatHistoryLengthValue.Value = Storage.GetSettings().ChatHistoryLength;
+        MaxMessageLengthValue.Value = Storage.GetSettings().MaxMessageLength;
+        InstructionsValue.Text = Storage.GetSettings().Instructions;
     }
     public new void Hide() {
         base.Hide();
 
         // Save settings
-        Storage.SaveData.Settings.ModelPath = ModelPathValue.Text;
-        Storage.SaveData.Settings.ChatHistoryLength = Mathf.RoundToInt(ChatHistoryLengthValue.Value);
-        Storage.SaveData.Settings.MaxMessageLength = Mathf.RoundToInt(MaxMessageLengthValue.Value);
-        Storage.SaveData.Settings.Instructions = InstructionsValue.Text;
+        Storage.GetSettings().ModelPath = ModelPathValue.Text;
+        Storage.GetSettings().ChatHistoryLength = Mathf.RoundToInt(ChatHistoryLengthValue.Value);
+        Storage.GetSettings().MaxMessageLength = Mathf.RoundToInt(MaxMessageLengthValue.Value);
+        Storage.GetSettings().Instructions = InstructionsValue.Text;
         Storage.Save();
     }
     
     private void ResetSettings() {
         // Set settings to default
-        Storage.SaveData.Settings = new SettingsRecord();
-        Storage.Save();
+        Storage.ResetSettings();
 
         // Show reset settings
         Show();

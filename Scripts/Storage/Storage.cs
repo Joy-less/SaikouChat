@@ -44,6 +44,13 @@ public partial class Storage : Node {
         Image.LoadWebpFromBuffer(Buffer);
         return ImageTexture.CreateFromImage(Image);
     }
+    public SettingsRecord GetSettings() {
+        return SaveData.Settings;
+    }
+    public void ResetSettings() {
+        SaveData.Settings = new SettingsRecord();
+        Save();
+    }
     public CharacterRecord CreateCharacter(string Name, string Bio, Image Icon = null) {
         // Create character
         CharacterRecord Character = new() {
@@ -61,6 +68,16 @@ public partial class Storage : Node {
         Save();
         return Character;
     }
+    public CharacterRecord GetCharacter(Guid CharacterId) {
+        return SaveData.Characters[CharacterId];
+    }
+    public IEnumerable<CharacterRecord> GetCharacters() {
+        return SaveData.Characters.Values
+            .OrderByDescending(Character => Character.CreatedTime);
+    }
+    public CharacterRecord GetCharacterFromChatId(Guid ChatId) {
+        return SaveData.Characters[SaveData.Chats[ChatId].CharacterId];
+    }
     public ChatRecord CreateChat(Guid CharacterId) {
         // Create chat
         ChatRecord Chat = new() {
@@ -71,6 +88,14 @@ public partial class Storage : Node {
         // Save data
         Save();
         return Chat;
+    }
+    public ChatRecord GetChat(Guid ChatId) {
+        return SaveData.Chats[ChatId];
+    }
+    public IEnumerable<ChatRecord> GetChatsFromCharacterId(Guid CharacterId) {
+        return SaveData.Chats.Values
+            .Where(Chat => Chat.CharacterId == CharacterId)
+            .OrderByDescending(Chat => Chat.CreatedTime);
     }
     public ChatMessageRecord CreateChatMessage(Guid ChatId, string Message, Guid? AuthorId) {
         // Create chat message
@@ -84,14 +109,8 @@ public partial class Storage : Node {
         Save();
         return ChatMessage;
     }
-    public IEnumerable<CharacterRecord> GetCharacters() {
-        return SaveData.Characters.Values
-            .OrderByDescending(Character => Character.CreatedTime);
-    }
-    public IEnumerable<ChatRecord> GetChats(Guid CharacterId) {
-        return SaveData.Chats.Values
-            .Where(Chat => Chat.CharacterId == CharacterId)
-            .OrderByDescending(Chat => Chat.CreatedTime);
+    public ChatMessageRecord GetChatMessage(Guid ChatId, Guid ChatMessageId) {
+        return SaveData.Chats[ChatId].ChatMessages[ChatMessageId];
     }
     public IEnumerable<ChatMessageRecord> GetChatMessages(Guid ChatId) {
         return SaveData.Chats[ChatId].ChatMessages.Values

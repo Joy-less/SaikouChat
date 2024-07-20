@@ -1,5 +1,3 @@
-using System.Linq;
-
 public partial class ChatSelectScreen : Panel {
     [Export] Storage Storage;
     [Export] ChatScreen ChatScreen;
@@ -22,7 +20,7 @@ public partial class ChatSelectScreen : Panel {
         // Clear displayed chats
         ChatList.Clear();
         // Display chats
-        foreach (ChatRecord Chat in Storage.GetChats(CharacterId)) {
+        foreach (ChatRecord Chat in Storage.GetChatsFromCharacterId(CharacterId)) {
             string ChatTitle = Chat.CreatedTime.ToLocalTime().ToConciseString();
             long ItemId = ChatList.AddItem(ChatTitle);
             ChatIds[ItemId] = Chat.Id;

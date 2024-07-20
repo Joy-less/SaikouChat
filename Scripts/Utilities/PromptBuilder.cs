@@ -1,7 +1,13 @@
 using System.Text;
+public class PromptBuilder {
+    public required string Instructions;
+    public required string SceneDescription;
+    public required CharacterRecord Character;
+    public required IEnumerable<ChatMessageRecord> Messages;
+    public required IEnumerable<ChatMessageRecord> PinnedMessages;
+    public required Func<Guid, CharacterRecord> GetCharacterFromId;
 
-public static class PromptBuilder {
-    public static string Build(string Instructions, string SceneDescription, CharacterRecord Character, IEnumerable<ChatMessageRecord> ChatMessages, IEnumerable<ChatMessageRecord> PinnedChatMessages) {
+    public string Build() {
         StringBuilder PromptBuilder = new();
 
         PromptBuilder.AppendLine("Instructions:");
@@ -23,16 +29,16 @@ public static class PromptBuilder {
         PromptBuilder.AppendLine();
 
         PromptBuilder.AppendLine("Pinned Messages:");
-        foreach (ChatMessageRecord PinnedChatMessage in PinnedChatMessages) {
-            PromptBuilder.Append(PinnedChatMessage.Author is not null ? $"\"{Character.Name}\"" : "User");
-            PromptBuilder.AppendLine($": \"{PinnedChatMessage.Message}\"");
+        foreach (ChatMessageRecord PinnedMessage in PinnedMessages) {
+            PromptBuilder.Append(PinnedMessage.Author is Guid Author ? $"\"{GetCharacterFromId(Author).Name}\"" : "User");
+            PromptBuilder.AppendLine($": \"{PinnedMessage.Message}\"");
         }
         PromptBuilder.AppendLine();
 
         PromptBuilder.AppendLine("Conversation:");
-        foreach (ChatMessageRecord ChatMessage in ChatMessages) {
-            PromptBuilder.Append(ChatMessage.Author is not null ? $"\"{Character.Name}\"" : "User");
-            PromptBuilder.AppendLine($": \"{ChatMessage.Message}\"");
+        foreach (ChatMessageRecord Message in Messages) {
+            PromptBuilder.Append(Message.Author is Guid Author ? $"\"{GetCharacterFromId(Author).Name}\"" : "User");
+            PromptBuilder.AppendLine($": \"{Message.Message}\"");
         }
         PromptBuilder.Append($"\"{Character.Name}\": ");
 

@@ -12,7 +12,7 @@ public partial class SceneCreateScreen : Panel {
     public new void Show() {
         base.Show();
 
-        DescriptionInput.Text = Storage.SaveData.Chats[ChatScreen.ChatId].SceneDescription;
+        DescriptionInput.Text = Storage.GetChat(ChatScreen.ChatId).SceneDescription;
     }
     public new void Hide() {
         base.Hide();
@@ -23,7 +23,7 @@ public partial class SceneCreateScreen : Panel {
 
     private void Create() {
         // Set chat's scene description
-        Storage.SaveData.Chats[ChatScreen.ChatId].SceneDescription = DescriptionInput.Text;
+        Storage.GetChat(ChatScreen.ChatId).SceneDescription = DescriptionInput.Text;
         Storage.Save();
 
         Hide();

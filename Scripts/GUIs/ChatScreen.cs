@@ -38,8 +38,7 @@ public partial class ChatScreen : Panel {
         // Update typing indicator
         if (CharacterState is not CharacterState.Idle && ChatId != default) {
             TypingIndicator.Show();
-            CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
-            TypingIndicator.Text = $"{Character.Name} is {(CharacterState is CharacterState.Thinking ? "thinking" : "typing")}...";
+            TypingIndicator.Text = $"{Storage.GetCharacterFromChatId(ChatId).Name} is {(CharacterState is CharacterState.Thinking ? "thinking" : "typing")}...";
         }
         else {
             TypingIndicator.Hide();
@@ -49,7 +48,7 @@ public partial class ChatScreen : Panel {
         base.Show();
 
         // Display character icon
-        CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
+        CharacterRecord Character = Storage.GetCharacterFromChatId(ChatId);
         CharacterIconRect.Texture = Storage.GetImage(Character.Icon);
         CharacterIconRect.TooltipText = Character.Name;
         // Clear displayed chat messages
@@ -120,8 +119,7 @@ public partial class ChatScreen : Panel {
         }
     }
     private bool Pin(Guid ChatId, Guid ChatMessageId) {
-        ChatRecord Chat = Storage.SaveData.Chats[ChatId];
-        ChatMessageRecord ChatMessage = Chat.ChatMessages[ChatMessageId];
+        ChatMessageRecord ChatMessage = Storage.GetChatMessage(ChatId, ChatMessageId);
 
         // Toggle chat message pinned
         ChatMessage.Pinned = !ChatMessage.Pinned;
@@ -131,11 +129,11 @@ public partial class ChatScreen : Panel {
         return ChatMessage.Pinned;
     }
     private void Regenerate(Guid ChatId, Guid ChatMessageId) {
-        ChatRecord Chat = Storage.SaveData.Chats[ChatId];
-        ChatMessageRecord ChatMessage = Chat.ChatMessages[ChatMessageId];
+        ChatRecord Chat = Storage.GetChat(ChatId);
+        ChatMessageRecord ChatMessage = Storage.GetChatMessage(ChatId, ChatMessageId);
 
         // Delete message and all later messages
-        Chat.ChatMessages = Chat.ChatMessages.Where(_ChatMessage => _ChatMessage.Value.CreatedTime < ChatMessage.CreatedTime).ToDictionary();
+        Chat.ChatMessages = Chat.ChatMessages.Where(ChatMessage1 => ChatMessage1.Value.CreatedTime < ChatMessage.CreatedTime).ToDictionary();
         Storage.Save();
         Show();
 
@@ -143,7 +141,7 @@ public partial class ChatScreen : Panel {
         _ = GenerateChatMessageAsync(ChatId);
     }
     private void Delete(Guid ChatId, Guid ChatMessageId) {
-        ChatRecord Chat = Storage.SaveData.Chats[ChatId];
+        ChatRecord Chat = Storage.GetChat(ChatId);
 
         // Delete message
         Chat.ChatMessages.Remove(ChatMessageId);
@@ -162,7 +160,7 @@ public partial class ChatScreen : Panel {
         BaseButton DeleteButton = Message.GetNode<BaseButton>("Background/DeleteButton");
 
         // Get chat message author
-        CharacterRecord Author = ChatMessage.Author is Guid AuthorId ? Storage.SaveData.Characters[AuthorId] : null;
+        CharacterRecord Author = ChatMessage.Author is Guid AuthorId ? Storage.GetCharacter(AuthorId) : null;
         // Display author name
         AuthorNameLabel.Text = Author is not null ? Author.Name : "You";
         // Display author icon
@@ -187,16 +185,17 @@ public partial class ChatScreen : Panel {
         await Semaphore.WaitAsync();
         try {
             // Get target character
-            CharacterRecord Character = Storage.SaveData.Characters[Storage.SaveData.Chats[ChatId].CharacterId];
+            CharacterRecord Character = Storage.GetCharacterFromChatId(ChatId);
 
             // Build prompt
-            string Prompt = PromptBuilder.Build(
-                Instructions: Storage.SaveData.Settings.Instructions,
-                SceneDescription: Storage.SaveData.Chats[ChatId].SceneDescription,
-                Character: Character,
-                ChatMessages: GetChatHistory(ChatId),
-                PinnedChatMessages: Storage.GetPinnedChatMessages(ChatId)
-            );
+            string Prompt = new PromptBuilder() {
+                Instructions = Storage.GetSettings().Instructions,
+                SceneDescription = Storage.GetChat(ChatId).SceneDescription,
+                Character = Character,
+                Messages = GetChatHistory(ChatId),
+                PinnedMessages = Storage.GetPinnedChatMessages(ChatId),
+                GetCharacterFromId = Storage.GetCharacter,
+            }.Build();
             
             // Print prompt (debug)
             if (OS.IsDebugBuild()) {
@@ -204,15 +203,15 @@ public partial class ChatScreen : Panel {
             }
 
             // Configure LLM model
-            if (!File.Exists(Storage.SaveData.Settings.ModelPath)) {
+            if (!File.Exists(Storage.GetSettings().ModelPath)) {
                 GD.PushError("Model path not found");
                 throw new InvalidOperationException();
             }
-            LLMBinding.ModelPath = Storage.SaveData.Settings.ModelPath;
+            LLMBinding.ModelPath = Storage.GetSettings().ModelPath;
 
             // Generate response
             CharacterState = CharacterState.Thinking;
-            string Response = (await LLMBinding.PromptAsync(Prompt, MaxLength: Storage.SaveData.Settings.MaxMessageLength, OnPartial: Text => {
+            string Response = (await LLMBinding.PromptAsync(Prompt, MaxLength: Storage.GetSettings().MaxMessageLength, OnPartial: Text => {
                 if (ChatId == this.ChatId) {
                     CharacterState = CharacterState.Typing;
                 }
@@ -234,7 +233,7 @@ public partial class ChatScreen : Panel {
         }
     }
     private IEnumerable<ChatMessageRecord> GetChatHistory(Guid ChatId) {
-        return Storage.GetChatMessages(ChatId).TakeLast(Storage.SaveData.Settings.ChatHistoryLength);
+        return Storage.GetChatMessages(ChatId).TakeLast(Storage.GetSettings().ChatHistoryLength);
     }
 }
 

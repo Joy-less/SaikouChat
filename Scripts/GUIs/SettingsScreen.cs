@@ -25,29 +25,25 @@ public partial class SettingsScreen : Panel {
         base.Show();
 
         // Load current settings
-        ModelPathValue.Text = Storage.SaveData.ModelPath;
-        ChatHistoryLengthValue.Value = Storage.SaveData.ChatHistoryLength;
-        MaxMessageLengthValue.Value = Storage.SaveData.MaxMessageLength;
-        InstructionsValue.Text = Storage.SaveData.Instructions;
+        ModelPathValue.Text = Storage.SaveData.Settings.ModelPath;
+        ChatHistoryLengthValue.Value = Storage.SaveData.Settings.ChatHistoryLength;
+        MaxMessageLengthValue.Value = Storage.SaveData.Settings.MaxMessageLength;
+        InstructionsValue.Text = Storage.SaveData.Settings.Instructions;
     }
     public new void Hide() {
         base.Hide();
 
         // Save settings
-        Storage.SaveData.ModelPath = ModelPathValue.Text;
-        Storage.SaveData.ChatHistoryLength = Mathf.RoundToInt(ChatHistoryLengthValue.Value);
-        Storage.SaveData.MaxMessageLength = Mathf.RoundToInt(MaxMessageLengthValue.Value);
-        Storage.SaveData.Instructions = InstructionsValue.Text;
+        Storage.SaveData.Settings.ModelPath = ModelPathValue.Text;
+        Storage.SaveData.Settings.ChatHistoryLength = Mathf.RoundToInt(ChatHistoryLengthValue.Value);
+        Storage.SaveData.Settings.MaxMessageLength = Mathf.RoundToInt(MaxMessageLengthValue.Value);
+        Storage.SaveData.Settings.Instructions = InstructionsValue.Text;
         Storage.Save();
     }
     
     private void ResetSettings() {
-        // Set settings to defaults
-        SaveRecord DefaultSaveData = new();
-        Storage.SaveData.ModelPath = DefaultSaveData.ModelPath;
-        Storage.SaveData.ChatHistoryLength = DefaultSaveData.ChatHistoryLength;
-        Storage.SaveData.MaxMessageLength = DefaultSaveData.MaxMessageLength;
-        Storage.SaveData.Instructions = DefaultSaveData.Instructions;
+        // Set settings to default
+        Storage.SaveData.Settings = new SettingsRecord();
         Storage.Save();
 
         // Show reset settings

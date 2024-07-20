@@ -162,7 +162,7 @@ public partial class ChatScreen : Panel {
 
             // Build prompt
             string Prompt = PromptBuilder.Build(
-                Instructions: Storage.SaveData.Instructions,
+                Instructions: Storage.SaveData.Settings.Instructions,
                 SceneDescription: Storage.SaveData.Chats[ChatId].SceneDescription,
                 Character: Character,
                 ChatMessages: ChatMessages
@@ -174,15 +174,15 @@ public partial class ChatScreen : Panel {
             }
 
             // Configure LLM model
-            if (!File.Exists(Storage.SaveData.ModelPath)) {
+            if (!File.Exists(Storage.SaveData.Settings.ModelPath)) {
                 GD.PushError("Model path not found");
                 throw new InvalidOperationException();
             }
-            LLMBinding.ModelPath = Storage.SaveData.ModelPath;
+            LLMBinding.ModelPath = Storage.SaveData.Settings.ModelPath;
 
             // Generate response
             CharacterState = CharacterState.Thinking;
-            string Response = (await LLMBinding.PromptAsync(Prompt, MaxLength: Storage.SaveData.MaxMessageLength, OnPartial: Text => {
+            string Response = (await LLMBinding.PromptAsync(Prompt, MaxLength: Storage.SaveData.Settings.MaxMessageLength, OnPartial: Text => {
                 if (ChatId == this.ChatId) {
                     CharacterState = CharacterState.Typing;
                 }
@@ -204,7 +204,7 @@ public partial class ChatScreen : Panel {
         }
     }
     private IEnumerable<ChatMessageRecord> GetChatHistory(Guid ChatId) {
-        return Storage.GetChatMessages(ChatId).TakeLast(Storage.SaveData.ChatHistoryLength);
+        return Storage.GetChatMessages(ChatId).TakeLast(Storage.SaveData.Settings.ChatHistoryLength);
     }
 }
 

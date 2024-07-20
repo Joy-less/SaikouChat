@@ -101,15 +101,7 @@ public partial class Storage : Node {
 
 public record SaveRecord {
     public string Version;
-    public string ModelPath;
-    public int ChatHistoryLength = 100;
-    public int MaxMessageLength = 500;
-    public string Instructions = """
-        You are the character in a conversation with the user.
-        Add a message to the conversation in character.
-        Your message should fit the context of the conversation.
-        Do not break character.
-        """;
+    public SettingsRecord Settings = new();
     public Dictionary<Guid, CharacterRecord> Characters = [];
     public Dictionary<Guid, ChatRecord> Chats = [];
     public Dictionary<Guid, byte[]> Images = [];
@@ -133,4 +125,15 @@ public record ChatMessageRecord : Record {
     public string Message;
     public Guid? Author;
     public DateTime CreatedTime = DateTime.UtcNow;
+}
+public record SettingsRecord : Record {
+    public string ModelPath = "";
+    public int ChatHistoryLength = 100;
+    public int MaxMessageLength = 500;
+    public string Instructions = """
+        You are the character in a conversation with the user.
+        Add a message to the conversation in character.
+        Your message should fit the context of the conversation.
+        Do not break character.
+        """;
 }

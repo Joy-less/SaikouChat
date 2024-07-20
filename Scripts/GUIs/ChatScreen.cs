@@ -16,13 +16,12 @@ public partial class ChatScreen : Panel {
     [Export] BaseButton GenerateButton;
     [Export] BaseButton BackButton;
 
-    private readonly SemaphoreSlim Semaphore = new(1, 1);
     public Guid ChatId;
+
+    private readonly SemaphoreSlim Semaphore = new(1, 1);
+    private LLMBinding LLMBinding;
     private CharacterState CharacterState;
     private bool FilterPinnedMessages;
-    
-    private LLMBinding LLMBinding;
-    private long ResponseCounter;
 
     public override void _Ready() {
         LLMBinding = new LLMBinding(LLM);

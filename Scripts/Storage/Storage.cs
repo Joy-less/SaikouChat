@@ -154,6 +154,7 @@ public record SettingsRecord : Record {
     public int ChatHistoryLength = 100;
     public int MaxMessageLength = 500;
     public double NotificationVolume = 1.0;
+    public bool AutoRespond = true;
     public string Instructions = """
         The character(s) are chatting with the user.
         Add a message to the conversation as one of the characters.

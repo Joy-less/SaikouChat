@@ -67,7 +67,7 @@ public partial class ChatScreen : Panel {
         Clear();
         // Display chat messages
         foreach (ChatMessageRecord ChatMessage in ChatMessagesToShow) {
-            AddChatMessage(ChatMessage);
+            AddChatMessage(ChatMessage, false);
         }
         // Scroll to bottom
         await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
@@ -150,7 +150,7 @@ public partial class ChatScreen : Panel {
         Storage.Save();
         Show();
     }
-    private void AddChatMessage(ChatMessageRecord ChatMessage, bool GenerateResponse = false) {
+    private void AddChatMessage(ChatMessageRecord ChatMessage, bool IsNew) {
         Control Message = (Control)MessageTemplate.Duplicate();
 
         // Get message sub-nodes
@@ -178,8 +178,8 @@ public partial class ChatScreen : Panel {
         // Add chat message
         Message.Show();
         MessageTemplate.GetParent().AddChild(Message);
-        // Generate response
-        if (GenerateResponse) {
+        // Auto generate response
+        if (IsNew && ChatMessage.Author is null && Storage.GetSettings().AutoRespond) {
             _ = GenerateChatMessageAsync(ChatId);
         }
     }
@@ -270,7 +270,7 @@ public partial class ChatScreen : Panel {
             ChatMessageRecord ChatMessage = Storage.CreateChatMessage(ChatId, ResponseMessage, ResponseAuthor.Id);
             // Add chat message to list
             if (ChatId == this.ChatId) {
-                AddChatMessage(ChatMessage);
+                AddChatMessage(ChatMessage, true);
             }
             // Play notification sound
             NotificationPlayer.VolumeDb = (float)Mathf.LinearToDb(Storage.GetSettings().NotificationVolume);

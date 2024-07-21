@@ -7,6 +7,7 @@ public partial class SettingsScreen : Panel {
     [Export] SpinBox ChatHistoryLengthValue;
     [Export] SpinBox MaxMessageLengthValue;
     [Export] Slider NotificationVolumeValue;
+    [Export] CheckBox AutoRespondValue;
     [Export] TextEdit InstructionsValue;
 
     private readonly FileDialog ModelFileDialog = new() {
@@ -31,6 +32,7 @@ public partial class SettingsScreen : Panel {
         ChatHistoryLengthValue.Value = Settings.ChatHistoryLength;
         MaxMessageLengthValue.Value = Settings.MaxMessageLength;
         NotificationVolumeValue.Value = Settings.NotificationVolume;
+        AutoRespondValue.ButtonPressed = Settings.AutoRespond;
         InstructionsValue.Text = Settings.Instructions;
     }
     public new void Hide() {
@@ -42,6 +44,7 @@ public partial class SettingsScreen : Panel {
         Settings.ChatHistoryLength = Mathf.RoundToInt(ChatHistoryLengthValue.Value);
         Settings.MaxMessageLength = Mathf.RoundToInt(MaxMessageLengthValue.Value);
         Settings.NotificationVolume = NotificationVolumeValue.Value;
+        Settings.AutoRespond = AutoRespondValue.ButtonPressed;
         Settings.Instructions = InstructionsValue.Text;
         Storage.Save();
     }

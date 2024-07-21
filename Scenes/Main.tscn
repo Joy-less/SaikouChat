@@ -42,7 +42,7 @@ Placeholder = ExtResource("5_t6ohq")
 [node name="NotificationPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_2aqtp")
 
-[node name="SettingsScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "ResetSettingsButton", "BackButton", "ModelPathValue", "ChatHistoryLengthValue", "MaxMessageLengthValue", "NotificationVolumeValue", "InstructionsValue")]
+[node name="SettingsScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "ResetSettingsButton", "BackButton", "ModelPathValue", "ChatHistoryLengthValue", "MaxMessageLengthValue", "NotificationVolumeValue", "AutoRespondValue", "InstructionsValue")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
@@ -55,6 +55,7 @@ ModelPathValue = NodePath("SettingsList/ModelPath/Value")
 ChatHistoryLengthValue = NodePath("SettingsList/ChatHistoryLength/Value")
 MaxMessageLengthValue = NodePath("SettingsList/MaxMessageLength/Value")
 NotificationVolumeValue = NodePath("SettingsList/NotificationVolume/Value")
+AutoRespondValue = NodePath("SettingsList/AutoRespond/Value")
 InstructionsValue = NodePath("SettingsList/Instructions/Value")
 
 [node name="SettingsList" type="VBoxContainer" parent="SettingsScreen"]
@@ -171,6 +172,28 @@ max_value = 2.0
 step = 0.1
 tick_count = 3
 ticks_on_borders = true
+
+[node name="AutoRespond" type="Panel" parent="SettingsScreen/SettingsList"]
+custom_minimum_size = Vector2(405, 60)
+layout_mode = 2
+
+[node name="Heading" type="Label" parent="SettingsScreen/SettingsList/AutoRespond"]
+layout_mode = 0
+offset_right = 202.5
+offset_bottom = 60.0
+text = "Auto Respond"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Value" type="CheckBox" parent="SettingsScreen/SettingsList/AutoRespond"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -202.5
+grow_horizontal = 0
+grow_vertical = 2
 
 [node name="Instructions" type="Panel" parent="SettingsScreen/SettingsList"]
 custom_minimum_size = Vector2(405, 200)

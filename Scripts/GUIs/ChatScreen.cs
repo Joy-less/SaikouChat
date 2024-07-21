@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 public partial class ChatScreen : Panel {
     [Export] Node LLM;
     [Export] Storage Storage;
+    [Export] AudioStreamPlayer NotificationPlayer;
     [Export] ChatSelectScreen ChatSelectScreen;
     [Export] SceneCreateScreen SceneCreateScreen;
     [Export] TextureRect CharacterIconRect;
@@ -271,6 +272,9 @@ public partial class ChatScreen : Panel {
             if (ChatId == this.ChatId) {
                 AddChatMessage(ChatMessage);
             }
+            // Play notification sound
+            NotificationPlayer.VolumeDb = (float)Mathf.LinearToDb(Storage.GetSettings().NotificationVolume);
+            NotificationPlayer.Play();
         }
         catch (Exception Ex) {
             GD.PushError(Ex);

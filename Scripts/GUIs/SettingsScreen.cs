@@ -6,6 +6,7 @@ public partial class SettingsScreen : Panel {
     [Export] LineEdit ModelPathValue;
     [Export] SpinBox ChatHistoryLengthValue;
     [Export] SpinBox MaxMessageLengthValue;
+    [Export] Slider NotificationVolumeValue;
     [Export] TextEdit InstructionsValue;
 
     private readonly FileDialog ModelFileDialog = new() {
@@ -25,19 +26,23 @@ public partial class SettingsScreen : Panel {
         base.Show();
 
         // Load current settings
-        ModelPathValue.Text = Storage.GetSettings().ModelPath;
-        ChatHistoryLengthValue.Value = Storage.GetSettings().ChatHistoryLength;
-        MaxMessageLengthValue.Value = Storage.GetSettings().MaxMessageLength;
-        InstructionsValue.Text = Storage.GetSettings().Instructions;
+        SettingsRecord Settings = Storage.GetSettings();
+        ModelPathValue.Text = Settings.ModelPath;
+        ChatHistoryLengthValue.Value = Settings.ChatHistoryLength;
+        MaxMessageLengthValue.Value = Settings.MaxMessageLength;
+        NotificationVolumeValue.Value = Settings.NotificationVolume;
+        InstructionsValue.Text = Settings.Instructions;
     }
     public new void Hide() {
         base.Hide();
 
         // Save settings
-        Storage.GetSettings().ModelPath = ModelPathValue.Text;
-        Storage.GetSettings().ChatHistoryLength = Mathf.RoundToInt(ChatHistoryLengthValue.Value);
-        Storage.GetSettings().MaxMessageLength = Mathf.RoundToInt(MaxMessageLengthValue.Value);
-        Storage.GetSettings().Instructions = InstructionsValue.Text;
+        SettingsRecord Settings = Storage.GetSettings();
+        Settings.ModelPath = ModelPathValue.Text;
+        Settings.ChatHistoryLength = Mathf.RoundToInt(ChatHistoryLengthValue.Value);
+        Settings.MaxMessageLength = Mathf.RoundToInt(MaxMessageLengthValue.Value);
+        Settings.NotificationVolume = NotificationVolumeValue.Value;
+        Settings.Instructions = InstructionsValue.Text;
         Storage.Save();
     }
     

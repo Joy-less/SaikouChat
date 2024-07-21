@@ -30,6 +30,7 @@ project/assembly_name="SaikouChat"
 [gui]
 
 theme/custom="res://Themes/MainTheme.tres"
+theme/custom_font="res://Fonts/Noto Sans JP/NotoSansJP-Medium.ttf"
 
 [rendering]
 

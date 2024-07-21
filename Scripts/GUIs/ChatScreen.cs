@@ -32,7 +32,6 @@ public partial class ChatScreen : Panel {
         EditSceneButton.Pressed += EditScene;
         PinnedMessagesButton.Pressed += PinnedMessages;
         MessageList.GetVScrollBar().Changed += UpdateScroll;
-        MessageInput.TextChanged += UpdateText;
     }
     public override void _Process(double Delta) {
         // Update typing indicator
@@ -42,6 +41,13 @@ public partial class ChatScreen : Panel {
         }
         else {
             TypingIndicator.Hide();
+        }
+    }
+    public override void _Input(InputEvent Event) {
+        // Send message on enter press
+        if (Event is InputEventKey KeyEvent && KeyEvent.Keycode is Key.Enter) {
+            Send();
+            AcceptEvent();
         }
     }
     public new async void Show() {
@@ -112,12 +118,6 @@ public partial class ChatScreen : Panel {
     private void UpdateScroll() {
         // Scroll to bottom when chat message added
         MessageList.GetVScrollBar().Value = MessageList.GetVScrollBar().MaxValue;
-    }
-    private void UpdateText() {
-        // Send message when enter key pressed
-        if (MessageInput.Text.ContainsAny(['\r', '\n'])) {
-            Send();
-        }
     }
     private bool Pin(Guid ChatId, Guid ChatMessageId) {
         ChatMessageRecord ChatMessage = Storage.GetChatMessage(ChatId, ChatMessageId);
@@ -205,8 +205,7 @@ public partial class ChatScreen : Panel {
 
             // Configure LLM model
             if (!File.Exists(Storage.GetSettings().ModelPath)) {
-                GD.PushError("Model path not found");
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("Model path not found");
             }
             LLMBinding.ModelPath = Storage.GetSettings().ModelPath;
 

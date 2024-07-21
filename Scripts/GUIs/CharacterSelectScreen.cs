@@ -3,6 +3,7 @@ public partial class CharacterSelectScreen : Panel {
     [Export] CharacterCreateScreen CharacterCreateScreen;
     [Export] SettingsScreen SettingsScreen;
     [Export] ChatSelectScreen ChatSelectScreen;
+    [Export] Label TitleLabel;
     [Export] ItemList CharacterList;
     [Export] BaseButton CreateButton;
     [Export] BaseButton SettingsButton;
@@ -14,6 +15,9 @@ public partial class CharacterSelectScreen : Panel {
         CreateButton.Pressed += Create;
         SettingsButton.Pressed += Settings;
         CharacterList.ItemSelected += SelectCharacter;
+
+        // Add version to title
+        TitleLabel.Text += " v" + ProjectSettings.GetSetting("application/config/version");
     }
     public new void Show() {
         base.Show();

@@ -184,7 +184,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Back"
 
-[node name="CharacterSelectScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterCreateScreen", "SettingsScreen", "ChatSelectScreen", "CharacterList", "CreateButton", "SettingsButton")]
+[node name="CharacterSelectScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterCreateScreen", "SettingsScreen", "ChatSelectScreen", "TitleLabel", "CharacterList", "CreateButton", "SettingsButton")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
@@ -193,6 +193,7 @@ Storage = NodePath("../Storage")
 CharacterCreateScreen = NodePath("../CharacterCreateScreen")
 SettingsScreen = NodePath("../SettingsScreen")
 ChatSelectScreen = NodePath("../ChatSelectScreen")
+TitleLabel = NodePath("Title")
 CharacterList = NodePath("CharacterList")
 CreateButton = NodePath("CreateButton")
 SettingsButton = NodePath("SettingsButton")

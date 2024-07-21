@@ -1,4 +1,5 @@
 using System.Linq;
+using Newtonsoft.Json;
 
 public partial class ChatScreen : Panel {
     [Export] Node LLM;
@@ -37,7 +38,7 @@ public partial class ChatScreen : Panel {
         // Update typing indicator
         if (CharacterState is not CharacterState.Idle && ChatId != default) {
             TypingIndicator.Show();
-            TypingIndicator.Text = $"{Storage.GetCharacterFromChatId(ChatId).Name} is {(CharacterState is CharacterState.Thinking ? "thinking" : "typing")}...";
+            TypingIndicator.Text = CharacterState is CharacterState.Thinking ? "Thinking..." : "Typing...";
         }
         else {
             TypingIndicator.Hide();
@@ -47,7 +48,7 @@ public partial class ChatScreen : Panel {
         base.Show();
 
         // Display character icon
-        CharacterRecord Character = Storage.GetCharacterFromChatId(ChatId);
+        CharacterRecord Character = Storage.GetCharacter(ChatSelectScreen.CharacterId);
         CharacterIconRect.Texture = Storage.GetImage(Character.Icon);
         CharacterIconRect.TooltipText = Character.Name;
         // Clear displayed chat messages
@@ -183,14 +184,14 @@ public partial class ChatScreen : Panel {
     private async Task GenerateChatMessageAsync(Guid ChatId) {
         await Semaphore.WaitAsync();
         try {
-            // Get target character
-            CharacterRecord Character = Storage.GetCharacterFromChatId(ChatId);
+            // Get involved characters
+            IEnumerable<CharacterRecord> Characters = Storage.GetCharactersFromChatId(ChatId);
 
             // Build prompt
             string Prompt = new PromptBuilder() {
                 Instructions = Storage.GetSettings().Instructions,
                 SceneDescription = Storage.GetChat(ChatId).SceneDescription,
-                Character = Character,
+                Characters = Characters,
                 Messages = GetChatHistory(ChatId),
                 PinnedMessages = Storage.GetPinnedChatMessages(ChatId),
                 GetCharacterFromId = Storage.GetCharacter,
@@ -208,15 +209,64 @@ public partial class ChatScreen : Panel {
             }
             LLMBinding.ModelPath = Storage.GetSettings().ModelPath;
 
-            // Generate response
+            // Update character state (for typing indicator)
             CharacterState = CharacterState.Thinking;
-            string Response = (await LLMBinding.PromptAsync(Prompt, MaxLength: Storage.GetSettings().MaxMessageLength, OnPartial: Text => {
+            void OnPartial(string Text) {
                 if (ChatId == this.ChatId) {
                     CharacterState = CharacterState.Typing;
                 }
-            })).Trim();
+            }
+
+            // Generate response
+            string ResponseMessage;
+            CharacterRecord ResponseAuthor;
+            // Group chat response
+            if (Characters.Count() > 1) {
+                string ResponseJson = await LLMBinding.GenerateAsync(Prompt, OnPartial: OnPartial, Json: JsonConvert.SerializeObject(new {
+                    type = "object",
+                    properties = new {
+                        CharacterName = new {
+                            type = "string",
+                        },
+                        Message = new {
+                            type = "string",
+                            minLength = 1,
+                            maxLength = Storage.GetSettings().MaxMessageLength,
+                        },
+                    },
+                    required = (string[])["CharacterName", "Message"],
+                }));
+                // Print response (debug)
+                if (OS.IsDebugBuild()) {
+                    GD.Print(ResponseJson);
+                }
+                // Deserialise response
+                var Response = JsonConvert.DeserializeAnonymousType(ResponseJson, new {
+                    CharacterName = "",
+                    Message = "",
+                });
+                ResponseMessage = Response.Message;
+                ResponseAuthor = Characters.First(Character => Character.Name == Response.CharacterName.Trim());
+            }
+            // Private chat response
+            else {
+                string ResponseJson = await LLMBinding.GenerateAsync(Prompt, OnPartial: OnPartial, Json: JsonConvert.SerializeObject(new {
+                    type = "string",
+                    minLength = 1,
+                    maxLength = Storage.GetSettings().MaxMessageLength,
+                }));
+                // Print response (debug)
+                if (OS.IsDebugBuild()) {
+                    GD.Print(ResponseJson);
+                }
+                // Deserialise response
+                string Response = JsonConvert.DeserializeObject<string>(ResponseJson);
+                ResponseMessage = Response;
+                ResponseAuthor = Characters.Single();
+            }
+
             // Send chat message
-            ChatMessageRecord ChatMessage = Storage.CreateChatMessage(ChatId, Response, Character.Id);
+            ChatMessageRecord ChatMessage = Storage.CreateChatMessage(ChatId, ResponseMessage, ResponseAuthor.Id);
             // Add chat message to list
             if (ChatId == this.ChatId) {
                 AddChatMessage(ChatMessage);

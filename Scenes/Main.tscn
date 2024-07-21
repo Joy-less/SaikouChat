@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://b4qiqpcdos7u5"]
+[gd_scene load_steps=23 format=3 uid="uid://b4qiqpcdos7u5"]
 
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterSelectScreen.cs" id="1_8ri7a"]
 [ext_resource type="Script" path="res://Scripts/GUIs/CharacterCreateScreen.cs" id="2_hptii"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://Scripts/GUIs/ChatSelectScreen.cs" id="8_8plea"]
 [ext_resource type="Texture2D" uid="uid://2xkawi0hkd86" path="res://Images/Send.png" id="9_m3uxe"]
 [ext_resource type="Script" path="res://Scripts/GUIs/ChatScreen.cs" id="9_pfw41"]
+[ext_resource type="Script" path="res://Scripts/GUIs/ChatCreateScreen.cs" id="10_c0hc7"]
 [ext_resource type="Texture2D" uid="uid://dqamrq0avf0p8" path="res://Images/Generate.png" id="10_lvru2"]
 [ext_resource type="Script" path="res://Scripts/GUIs/SettingsScreen.cs" id="11_5r3ws"]
 [ext_resource type="Texture2D" uid="uid://b06ay7iowo8ab" path="res://Images/Delete.png" id="11_30l5g"]
@@ -36,141 +37,6 @@ script = ExtResource("2_m72s7")
 [node name="Storage" type="Node" parent="."]
 script = ExtResource("3_1yded")
 Placeholder = ExtResource("5_t6ohq")
-
-[node name="CharacterSelectScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterCreateScreen", "SettingsScreen", "ChatSelectScreen", "CharacterList", "CreateButton", "SettingsButton")]
-visible = false
-offset_right = 405.0
-offset_bottom = 720.0
-script = ExtResource("1_8ri7a")
-Storage = NodePath("../Storage")
-CharacterCreateScreen = NodePath("../CharacterCreateScreen")
-SettingsScreen = NodePath("../SettingsScreen")
-ChatSelectScreen = NodePath("../ChatSelectScreen")
-CharacterList = NodePath("CharacterList")
-CreateButton = NodePath("CreateButton")
-SettingsButton = NodePath("SettingsButton")
-
-[node name="Title" type="Label" parent="CharacterSelectScreen"]
-layout_mode = 0
-offset_right = 325.0
-offset_bottom = 80.0
-text = "Saikou Chat"
-label_settings = SubResource("LabelSettings_ou8nb")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Icon" type="TextureRect" parent="CharacterSelectScreen"]
-layout_mode = 0
-offset_left = 325.0
-offset_right = 405.0
-offset_bottom = 80.0
-texture = ExtResource("5_8cm0e")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="CharacterList" type="ItemList" parent="CharacterSelectScreen"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 80.0
-offset_bottom = -120.0
-grow_horizontal = 2
-grow_vertical = 2
-focus_mode = 0
-fixed_icon_size = Vector2i(60, 60)
-
-[node name="CreateButton" type="Button" parent="CharacterSelectScreen"]
-layout_mode = 0
-offset_left = 30.0
-offset_top = 630.0
-offset_right = 200.0
-offset_bottom = 690.0
-focus_mode = 0
-theme_override_font_sizes/font_size = 20
-text = "New Character"
-
-[node name="SettingsButton" type="Button" parent="CharacterSelectScreen"]
-layout_mode = 0
-offset_left = 205.0
-offset_top = 630.0
-offset_right = 375.0
-offset_bottom = 690.0
-focus_mode = 0
-theme_override_font_sizes/font_size = 20
-text = "Settings"
-
-[node name="CharacterCreateScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "NameInput", "BioInput", "IconInput", "CreateButton", "BackButton")]
-visible = false
-offset_right = 405.0
-offset_bottom = 720.0
-script = ExtResource("2_hptii")
-Storage = NodePath("../Storage")
-CharacterSelectScreen = NodePath("../CharacterSelectScreen")
-NameInput = NodePath("NameInput")
-BioInput = NodePath("BioInput")
-IconInput = NodePath("IconBackground/IconInput")
-CreateButton = NodePath("CreateButton")
-BackButton = NodePath("BackButton")
-
-[node name="NameInput" type="LineEdit" parent="CharacterCreateScreen"]
-layout_mode = 2
-offset_left = 50.0
-offset_top = 50.0
-offset_right = 250.0
-offset_bottom = 95.0
-theme_override_font_sizes/font_size = 20
-placeholder_text = "Name"
-
-[node name="BioInput" type="TextEdit" parent="CharacterCreateScreen"]
-layout_mode = 2
-offset_left = 50.0
-offset_top = 150.0
-offset_right = 350.0
-offset_bottom = 500.0
-theme_override_font_sizes/font_size = 20
-placeholder_text = "Bio"
-wrap_mode = 1
-
-[node name="IconBackground" type="Panel" parent="CharacterCreateScreen"]
-layout_mode = 0
-offset_left = 255.0
-offset_top = 50.0
-offset_right = 350.0
-offset_bottom = 145.0
-theme = ExtResource("5_tp71k")
-
-[node name="IconInput" type="TextureButton" parent="CharacterCreateScreen/IconBackground"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-focus_mode = 0
-texture_normal = ExtResource("5_t6ohq")
-ignore_texture_size = true
-stretch_mode = 5
-
-[node name="CreateButton" type="Button" parent="CharacterCreateScreen"]
-layout_mode = 0
-offset_left = 35.0
-offset_top = 640.0
-offset_right = 185.0
-offset_bottom = 690.0
-focus_mode = 0
-theme_override_font_sizes/font_size = 20
-text = "Create"
-
-[node name="BackButton" type="Button" parent="CharacterCreateScreen"]
-layout_mode = 0
-offset_left = 220.0
-offset_top = 640.0
-offset_right = 370.0
-offset_bottom = 690.0
-focus_mode = 0
-theme_override_font_sizes/font_size = 20
-text = "Back"
 
 [node name="SettingsScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "ResetSettingsButton", "BackButton", "ModelPathValue", "ChatHistoryLengthValue", "MaxMessageLengthValue", "InstructionsValue")]
 visible = false
@@ -318,13 +184,149 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 20
 text = "Back"
 
-[node name="ChatSelectScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "ChatScreen", "CharacterSelectScreen", "ChatList", "CreateButton", "BackButton")]
+[node name="CharacterSelectScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterCreateScreen", "SettingsScreen", "ChatSelectScreen", "CharacterList", "CreateButton", "SettingsButton")]
+visible = false
+offset_right = 405.0
+offset_bottom = 720.0
+script = ExtResource("1_8ri7a")
+Storage = NodePath("../Storage")
+CharacterCreateScreen = NodePath("../CharacterCreateScreen")
+SettingsScreen = NodePath("../SettingsScreen")
+ChatSelectScreen = NodePath("../ChatSelectScreen")
+CharacterList = NodePath("CharacterList")
+CreateButton = NodePath("CreateButton")
+SettingsButton = NodePath("SettingsButton")
+
+[node name="Title" type="Label" parent="CharacterSelectScreen"]
+layout_mode = 0
+offset_right = 325.0
+offset_bottom = 80.0
+text = "Saikou Chat"
+label_settings = SubResource("LabelSettings_ou8nb")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Icon" type="TextureRect" parent="CharacterSelectScreen"]
+layout_mode = 0
+offset_left = 325.0
+offset_right = 405.0
+offset_bottom = 80.0
+texture = ExtResource("5_8cm0e")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CharacterList" type="ItemList" parent="CharacterSelectScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 80.0
+offset_bottom = -120.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+fixed_icon_size = Vector2i(60, 60)
+
+[node name="CreateButton" type="Button" parent="CharacterSelectScreen"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 630.0
+offset_right = 200.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "New Character"
+
+[node name="SettingsButton" type="Button" parent="CharacterSelectScreen"]
+layout_mode = 0
+offset_left = 205.0
+offset_top = 630.0
+offset_right = 375.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Settings"
+
+[node name="CharacterCreateScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "CharacterSelectScreen", "NameInput", "BioInput", "IconInput", "CreateButton", "BackButton")]
+visible = false
+offset_right = 405.0
+offset_bottom = 720.0
+script = ExtResource("2_hptii")
+Storage = NodePath("../Storage")
+CharacterSelectScreen = NodePath("../CharacterSelectScreen")
+NameInput = NodePath("NameInput")
+BioInput = NodePath("BioInput")
+IconInput = NodePath("IconBackground/IconInput")
+CreateButton = NodePath("CreateButton")
+BackButton = NodePath("BackButton")
+
+[node name="NameInput" type="LineEdit" parent="CharacterCreateScreen"]
+layout_mode = 2
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 250.0
+offset_bottom = 95.0
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Name"
+
+[node name="BioInput" type="TextEdit" parent="CharacterCreateScreen"]
+layout_mode = 2
+offset_left = 50.0
+offset_top = 150.0
+offset_right = 350.0
+offset_bottom = 500.0
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Bio"
+wrap_mode = 1
+
+[node name="IconBackground" type="Panel" parent="CharacterCreateScreen"]
+layout_mode = 0
+offset_left = 255.0
+offset_top = 50.0
+offset_right = 350.0
+offset_bottom = 145.0
+theme = ExtResource("5_tp71k")
+
+[node name="IconInput" type="TextureButton" parent="CharacterCreateScreen/IconBackground"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+texture_normal = ExtResource("5_t6ohq")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="CreateButton" type="Button" parent="CharacterCreateScreen"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 640.0
+offset_right = 185.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Create"
+
+[node name="BackButton" type="Button" parent="CharacterCreateScreen"]
+layout_mode = 0
+offset_left = 220.0
+offset_top = 640.0
+offset_right = 370.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Back"
+
+[node name="ChatSelectScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "ChatScreen", "ChatCreateScreen", "CharacterSelectScreen", "ChatList", "CreateButton", "BackButton")]
 visible = false
 offset_right = 405.0
 offset_bottom = 720.0
 script = ExtResource("8_8plea")
 Storage = NodePath("../Storage")
 ChatScreen = NodePath("../ChatScreen")
+ChatCreateScreen = NodePath("../ChatCreateScreen")
 CharacterSelectScreen = NodePath("../CharacterSelectScreen")
 ChatList = NodePath("ChatList")
 CreateButton = NodePath("CreateButton")
@@ -353,6 +355,54 @@ theme_override_font_sizes/font_size = 20
 text = "New Chat"
 
 [node name="BackButton" type="Button" parent="ChatSelectScreen"]
+layout_mode = 0
+offset_left = 220.0
+offset_top = 640.0
+offset_right = 370.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Back"
+
+[node name="ChatCreateScreen" type="Panel" parent="." node_paths=PackedStringArray("Storage", "ChatSelectScreen", "CharacterList", "CreateButton", "BackButton")]
+visible = false
+offset_right = 405.0
+offset_bottom = 720.0
+script = ExtResource("10_c0hc7")
+Storage = NodePath("../Storage")
+ChatSelectScreen = NodePath("../ChatSelectScreen")
+CharacterList = NodePath("CharacterList")
+CreateButton = NodePath("CreateButton")
+BackButton = NodePath("BackButton")
+
+[node name="CharacterList" type="ItemList" parent="ChatCreateScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 80.0
+offset_bottom = -120.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+select_mode = 1
+max_columns = 0
+same_column_width = true
+fixed_column_width = 90
+icon_mode = 0
+fixed_icon_size = Vector2i(60, 60)
+
+[node name="CreateButton" type="Button" parent="ChatCreateScreen"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 640.0
+offset_right = 185.0
+offset_bottom = 690.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "Create"
+
+[node name="BackButton" type="Button" parent="ChatCreateScreen"]
 layout_mode = 0
 offset_left = 220.0
 offset_top = 640.0

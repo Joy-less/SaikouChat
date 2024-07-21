@@ -75,13 +75,13 @@ public partial class Storage : Node {
         return SaveData.Characters.Values
             .OrderByDescending(Character => Character.CreatedTime);
     }
-    public CharacterRecord GetCharacterFromChatId(Guid ChatId) {
-        return SaveData.Characters[SaveData.Chats[ChatId].CharacterId];
+    public IEnumerable<CharacterRecord> GetCharactersFromChatId(Guid ChatId) {
+        return SaveData.Chats[ChatId].CharacterIds.Select(GetCharacter);
     }
-    public ChatRecord CreateChat(Guid CharacterId) {
+    public ChatRecord CreateChat(List<Guid> CharacterIds) {
         // Create chat
         ChatRecord Chat = new() {
-            CharacterId = CharacterId,
+            CharacterIds = CharacterIds,
         };
         // Add chat
         SaveData.Chats[Chat.Id] = Chat;
@@ -94,7 +94,7 @@ public partial class Storage : Node {
     }
     public IEnumerable<ChatRecord> GetChatsFromCharacterId(Guid CharacterId) {
         return SaveData.Chats.Values
-            .Where(Chat => Chat.CharacterId == CharacterId)
+            .Where(Chat => Chat.CharacterIds.Contains(CharacterId))
             .OrderByDescending(Chat => Chat.CreatedTime);
     }
     public ChatMessageRecord CreateChatMessage(Guid ChatId, string Message, Guid? AuthorId) {
@@ -138,7 +138,7 @@ public record CharacterRecord : Record {
     public DateTime CreatedTime = DateTime.UtcNow;
 }
 public record ChatRecord : Record {
-    public Guid CharacterId;
+    public List<Guid> CharacterIds = [];
     public string SceneDescription = "";
     public Dictionary<Guid, ChatMessageRecord> ChatMessages = [];
     public DateTime CreatedTime = DateTime.UtcNow;
@@ -154,9 +154,8 @@ public record SettingsRecord : Record {
     public int ChatHistoryLength = 100;
     public int MaxMessageLength = 500;
     public string Instructions = """
-        You are the character in a conversation with the user.
-        Add a message to the conversation in character.
-        Your message should fit the context of the conversation.
+        The character(s) are chatting with the user.
+        Add a message to the conversation as one of the characters.
         Do not break character.
         """;
 }

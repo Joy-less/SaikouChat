@@ -25,18 +25,3 @@ func generate_async(prompt:String, grammar:String, json:String, on_partial:Calla
 	generator.queue_free()
 	# Return result
 	return result
-
-func prompt_async(prompt:String, min_length:int, max_length:int, on_partial:Callable) -> String:
-	# Create response schema
-	var schema:String = """
-		{
-			"type": "string",
-			"minLength": {min_length},
-			"maxLength": {max_length}
-		}
-		""".format({"min_length": min_length, "max_length": max_length})
-	# Generate result
-	var result = JSON.parse_string(await generate_async(prompt, "", schema, on_partial))
-	if not result:
-		return ""
-	return result

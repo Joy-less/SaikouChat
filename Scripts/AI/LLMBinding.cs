@@ -12,9 +12,6 @@ public class LLMBinding(Node Inner) {
     public async Task<string> GenerateAsync(string Prompt, string Grammar = "", string Json = "", Action<string> OnPartial = null) {
         return await Await<string>(Inner.Call("generate_async", Prompt, Grammar, Json, Callable.From(OnPartial)));
     }
-    public async Task<string> PromptAsync(string Prompt, int MinLength = 1, int MaxLength = 500, Action<string> OnPartial = null) {
-        return await Await<string>(Inner.Call("prompt_async", Prompt, MinLength, MaxLength, Callable.From(OnPartial)));
-    }
 
     private async Task<Variant[]> Await(Variant Coroutine) {
         return await Inner.ToSignal((GodotObject)Coroutine, "completed");

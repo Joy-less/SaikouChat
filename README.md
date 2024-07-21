@@ -9,14 +9,11 @@ It uses local models for a free and open-source experience.
 ## Features
 
 - Create and chat with AI characters
-- Runs offline, for free, and is open-source
-- All character data stored in a JSON file for portability and editability
-- Bring your own `.gguf` model
-- Take control with pin, regenerate and delete buttons
-
-## To-do
-
-- Group chats
+- Group chats with multiple characters
+- Free & open-source and uses your own local large language model
+- Character data stored in a JSON file for portability and editability
+- Pin messages you like
+- Regenerate or delete messages you don't like
 
 ## Disclaimers
 
@@ -43,6 +40,7 @@ Here are some free models:
 
 - You can find detailed anime/manga character biographies on [MyAnimeList](https://myanimelist.net/character.php)
 - You can describe a setting for the chat with the Edit Scene Description button. The setting is always included in the prompt
+- You can hold shift to select multiple characters when creating a chat
 - You can pin messages with the Pin button. Pinned messages are always included in the prompt, even if they exceed the message history limit
 - You can generate messages manually with the Generate button
 - You can regenerate bad messages with the Regenerate button. The message and all subsequent messages will be deleted and a new message generated

@@ -15,6 +15,10 @@ It uses local models for a free and open-source experience.
 - Pin messages you like
 - Regenerate or delete messages you don't like
 
+## Screenshots
+
+<img src="https://github.com/Joy-less/SaikouChat/blob/db3658d630dd5fe7d0b6ce5f1a93ab12900fa9f3/Images/Screenshots/Screenshot1.png" width="300" /> <img src="https://github.com/Joy-less/SaikouChat/blob/db3658d630dd5fe7d0b6ce5f1a93ab12900fa9f3/Images/Screenshots/Screenshot2.png" width="300" />
+
 ## Disclaimers
 
 - Responses can take a while to generate

@@ -51,12 +51,13 @@ public partial class ChatScreen : Panel {
         CharacterRecord Character = Storage.GetCharacter(ChatSelectScreen.CharacterId);
         CharacterIconRect.Texture = Storage.GetImage(Character.Icon);
         CharacterIconRect.TooltipText = Character.Name;
-        // Clear displayed chat messages
-        Clear();
         // Get filtered chat messages
         IEnumerable<ChatMessageRecord> ChatMessagesToShow = FilterPinnedMessages
             ? Storage.GetPinnedChatMessages(ChatId)
             : GetChatHistory(ChatId);
+        PinnedMessagesButton.ButtonPressed = FilterPinnedMessages;
+        // Clear displayed chat messages
+        Clear();
         // Display chat messages
         foreach (ChatMessageRecord ChatMessage in ChatMessagesToShow) {
             AddChatMessage(ChatMessage);

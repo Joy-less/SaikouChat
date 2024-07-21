@@ -488,7 +488,9 @@ grow_horizontal = 2
 grow_vertical = 2
 tooltip_text = "Pinned Messages"
 focus_mode = 0
+toggle_mode = true
 texture_normal = ExtResource("11_ib6ie")
+texture_pressed = ExtResource("13_t3j3p")
 ignore_texture_size = true
 stretch_mode = 5
 
